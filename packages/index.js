@@ -1,5 +1,5 @@
 import * as components from "./components";
-import * as store from "./store";
+// import * as store from "./store";
 const install = function (Vue, options = {}) {
   if (install.installed) return;
   const { crud = {} } = options;
@@ -9,12 +9,12 @@ const install = function (Vue, options = {}) {
   Vue.prototype.$__crud = crud;
   Vue.prototype.$__vue = Vue;
   Vue.prototype.$__inst = new Vue();
-  // eslint-disable-next-line no-undef
-  store.__crud = crud;
-  // eslint-disable-next-line no-undef
-  store.__vue = Vue;
-  // eslint-disable-next-line no-undef
-  store.__inst = new Vue();
+  // // eslint-disable-next-line no-undef
+  // store.__crud = crud;
+  // // eslint-disable-next-line no-undef
+  // store.__vue = Vue;
+  // // eslint-disable-next-line no-undef
+  // store.__inst = new Vue();
   // 注册组件
   for (let i in components) {
     Vue.use(components[i]);

@@ -5,8 +5,6 @@
       <el-col :span="3">3</el-col>
       <v-flex1>111</v-flex1>
     </el-row>
-    <el-button @click="visible = !visible">visible</el-button>
-    <v-dialog :visible.sync="visible"></v-dialog>
   </div>
 </template>
 
@@ -14,9 +12,7 @@
 export default {
   name: "App",
   data() {
-    return {
-      visible: false,
-    };
+    return {};
   },
   mounted() {},
 };
