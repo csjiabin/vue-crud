@@ -1,10 +1,11 @@
 <template>
-  <div id="app">
+  <div id="app" @contextmenu.stop.prevent="open">
     <img alt="Vue logo" src="./assets/logo.png" />
     <el-row type="flex">
       <el-col :span="3">3</el-col>
       <v-flex1>111</v-flex1>
     </el-row>
+    <button>button</button>
   </div>
 </template>
 
@@ -15,16 +16,72 @@ export default {
     return {};
   },
   mounted() {},
+  methods: {
+    open(event) {
+      this.$crud.openContextMenu(event, {
+        list: [
+          {
+            label: "新增",
+            "suffix-icon": "el-icon-plus",
+            callback: (_, done) => {
+              this.$message.info("点击了新增");
+              done();
+            },
+          },
+          {
+            label: "编辑",
+            "suffix-icon": "el-icon-edit",
+            callback: (_, done) => {
+              this.$message.info("点击了编辑");
+              done();
+            },
+          },
+          {
+            label: "删除",
+            "suffix-icon": "el-icon-delete",
+          },
+          {
+            label: "二级",
+            "suffix-icon": "el-icon-right",
+            children: [
+              {
+                label: "文本超出隐藏，有一天晚上",
+                ellipsis: true,
+              },
+              {
+                label: "禁用",
+                disabled: true,
+              },
+              {
+                label: "更多",
+                callback: (_, done) => {
+                  this.$message.warning("开发中");
+                  done();
+                },
+              },
+            ],
+          },
+        ],
+      });
+    },
+  },
 };
 </script>
 
 <style lang="scss">
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  padding-top: 60px;
+  box-sizing: border-box;
+  text-align: center;
+  height: 100%;
 }
 </style>

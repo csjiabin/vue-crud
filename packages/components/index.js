@@ -1,3 +1,5 @@
 import Flex1 from "./flex1";
 import Dialog from "./dialog";
-export { Flex1, Dialog };
+import ContextMenu from "./context-menu";
+import Vnodes from "./vnodes";
+export { Flex1, Dialog, ContextMenu, Vnodes };

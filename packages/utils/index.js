@@ -1,7 +1,7 @@
 import cloneDeep from "clone-deep";
 import flat from "array.prototype.flat";
-import { __inst, __vue } from "../store";
-
+import { __inst } from "../store";
+import Vue from "vue";
 export function isArray(value) {
   if (typeof Array.isArray === "function") {
     return Array.isArray(value);
@@ -137,10 +137,65 @@ export function contains(parent, node) {
 }
 
 export function getInstance(component) {
-  const ComponentConstructor = __vue.extend(component);
+  const ComponentConstructor = Vue.extend(component);
   return new ComponentConstructor({
     el: document.createElement("div"),
   });
 }
+/**
+ * @param {HTMLElement} element
+ * @param {string} event
+ * @param {function} handler
+ */
+export const on = (function () {
+  if (document.addEventListener) {
+    return function (element, event, handler) {
+      if (element && event && handler) {
+        element.addEventListener(event, handler, false);
+      }
+    };
+  } else {
+    return function (element, event, handler) {
+      if (element && event && handler) {
+        element.attachEvent("on" + event, handler);
+      }
+    };
+  }
+})();
+/**
+ * @param {HTMLElement} element
+ * @param {string} event
+ * @param {function} handler
+ */
+export const off = (function () {
+  if (document.removeEventListener) {
+    return function (element, event, handler) {
+      if (element && event) {
+        element.removeEventListener(event, handler, false);
+      }
+    };
+  } else {
+    return function (element, event, handler) {
+      if (element && event) {
+        element.detachEvent("on" + event, handler);
+      }
+    };
+  }
+})();
+
+/**
+ * @param {HTMLElement} el
+ * @param {string} event
+ * @param {function} fn
+ */
+export const once = function (el, event, fn) {
+  const listener = function () {
+    if (fn) {
+      fn.apply(this, arguments);
+    }
+    off(el, event, listener);
+  };
+  on(el, event, listener);
+};
 
 export { cloneDeep, flat };

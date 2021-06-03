@@ -1,4 +1,4 @@
-import Flex1 from "./flex1.vue";
+import Flex1 from "./main.vue";
 Flex1.install = (Vue) => {
   Vue.component(Flex1.name, Flex1);
 };
