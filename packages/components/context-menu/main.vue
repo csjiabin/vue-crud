@@ -42,13 +42,13 @@ export default {
   },
   methods: {
     renderList() {
-      const deep = (list, pIndex, level) => {
+      const deep = (list, level) => {
         return (
           <div class={["v-context-menu-list", level > 1 && "is-append"]}>
             {list
               .filter((e) => !e.hidden)
               .map((e, i) => {
-                e._index = `${pIndex}-${i}`;
+                e._index = `${level}-${i}`;
 
                 return (
                   <div
@@ -60,25 +60,25 @@ export default {
                     }}
                   >
                     {/* 前缀图标 */}
-                    {e["prefix-icon"] && <i class={e["prefix-icon"]}></i>}
+                    {e["prefix-icon"] && <i class={e["prefix-icon"]} />}
 
                     {/* 标题 */}
                     <span on-click={() => this.clickRow(e)}>{e.label}</span>
 
                     {/* 后缀图标 */}
-                    {e["suffix-icon"] && <i class={e["suffix-icon"]}></i>}
+                    {e["suffix-icon"] && <i class={e["suffix-icon"]} />}
 
                     {/* 子节点 */}
                     {e.children &&
                       e.showChildren &&
-                      deep(e.children, e._index, level + 1)}
+                      deep(e.children, level + 1)}
                   </div>
                 );
               })}
           </div>
         );
       };
-      return deep(this.list, 0, 1);
+      return deep(this.list, 1);
     },
     onMousedown(e) {
       if (!contains(this.$el, e.target) && this.$el != e.target) {
