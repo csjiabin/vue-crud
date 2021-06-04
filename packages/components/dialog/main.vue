@@ -1,5 +1,6 @@
 <template>
   <el-dialog
+    ref="dialog"
     v-bind="props"
     :width="width"
     :fullscreen="isFullscreen"
@@ -61,7 +62,7 @@
 </template>
 <script>
 import Screen from "~/mixins/screen";
-import { isBoolean } from "~/utils";
+import { isBoolean, on, off } from "~/utils";
 export default {
   name: "v-dialog",
   mixins: [Screen],
@@ -152,20 +153,24 @@ export default {
     visible: {
       immediate: true,
       handler(v) {
-        if (v) {
-          this.dragEvent();
-          return;
-        }
+        if (v) return;
         setTimeout(() => {
           this.changeFullscreen(false);
         }, 300);
       },
     },
   },
+  mounted() {
+    const hdr = this.$el.querySelector(".el-dialog__header");
+    if (!hdr) {
+      return false;
+    }
+    on(hdr, "mousedown", this.dragEvent);
+    this.$once("hook:beforeDestroy", () => {
+      off(hdr, "mousedown", this.dragEvent);
+    });
+  },
   methods: {
-    renderNode() {
-      this.$slots;
-    },
     open() {
       if (!this.keepAlive) {
         this.cacheKey++;
@@ -201,126 +206,117 @@ export default {
       this.fullscreen = isBoolean(v) ? v : !this.fullscreen;
     },
     // 拖动事件
-    dragEvent() {
-      this.$nextTick(() => {
-        const dlg = this.$el.querySelector(".el-dialog");
-        const hdr = this.$el.querySelector(".el-dialog__header");
+    dragEvent(e) {
+      const dlg = this.$el.querySelector(".el-dialog");
+      const hdr = this.$el.querySelector(".el-dialog__header");
+      // Props
+      const { top = "15vh" } = this.props;
 
-        if (!hdr) {
+      // Body size
+      const { clientWidth, clientHeight } = document.documentElement;
+
+      // Try drag
+      const isDrag = (() => {
+        if (this.fullscreen) {
           return false;
         }
 
-        hdr.onmousedown = (e) => {
-          // Props
-          const { top = "15vh" } = this.props;
+        if (!this.drag) {
+          return false;
+        }
 
-          // Body size
-          const { clientWidth, clientHeight } = document.documentElement;
+        // Determine height of the box is too large
+        let marginTop = 0;
 
-          // Try drag
-          const isDrag = (() => {
-            if (this.fullscreen) {
-              return false;
-            }
+        if (["vh", "%"].some((e) => top.includes(e))) {
+          marginTop = clientHeight * (parseInt(top) / 100);
+        }
 
-            if (!this.drag) {
-              return false;
-            }
+        if (top.includes("px")) {
+          marginTop = top;
+        }
 
-            // Determine height of the box is too large
-            let marginTop = 0;
+        if (dlg.clientHeight > clientHeight - 50 - marginTop) {
+          return false;
+        }
 
-            if (["vh", "%"].some((e) => top.includes(e))) {
-              marginTop = clientHeight * (parseInt(top) / 100);
-            }
+        return true;
+      })();
 
-            if (top.includes("px")) {
-              marginTop = top;
-            }
+      // Set header cursor state
+      if (!isDrag) {
+        return (hdr.style.cursor = "text");
+      } else {
+        hdr.style.cursor = "move";
+      }
 
-            if (dlg.clientHeight > clientHeight - 50 - marginTop) {
-              return false;
-            }
+      // Set el-dialog style, hidden scroller
+      dlg.style.marginTop = 0;
+      dlg.style.marginBottom = 0;
+      dlg.style.top = dlg.style.top || top;
 
-            return true;
-          })();
+      // Distance
+      const dis = {
+        left: e.clientX - hdr.offsetLeft,
+        top: e.clientY - hdr.offsetTop,
+      };
 
-          // Set header cursor state
-          if (!isDrag) {
-            return (hdr.style.cursor = "text");
-          } else {
-            hdr.style.cursor = "move";
-          }
+      // Calc left and top of the box
+      const box = (() => {
+        const { left, top } =
+          dlg.currentStyle || window.getComputedStyle(dlg, null);
 
-          // Set el-dialog style, hidden scroller
-          dlg.style.marginTop = 0;
-          dlg.style.marginBottom = 0;
-          dlg.style.top = dlg.style.top || top;
-
-          // Distance
-          const dis = {
-            left: e.clientX - hdr.offsetLeft,
-            top: e.clientY - hdr.offsetTop,
+        if (left.includes("%")) {
+          return {
+            top: +clientHeight * (+top.replace(/\%/g, "") / 100),
+            left: +clientWidth * (+left.replace(/\%/g, "") / 100),
           };
-
-          // Calc left and top of the box
-          const box = (() => {
-            const { left, top } =
-              dlg.currentStyle || window.getComputedStyle(dlg, null);
-
-            if (left.includes("%")) {
-              return {
-                top: +clientHeight * (+top.replace(/\%/g, "") / 100),
-                left: +clientWidth * (+left.replace(/\%/g, "") / 100),
-              };
-            } else {
-              return {
-                top: +top.replace(/\px/g, ""),
-                left: +left.replace(/\px/g, ""),
-              };
-            }
-          })();
-
-          // Screen limit
-          const pad = 5;
-          const minLeft = -(clientWidth - dlg.clientWidth) / 2 + pad;
-          const maxLeft =
-            (dlg.clientWidth >= clientWidth / 2
-              ? dlg.clientWidth / 2 - (dlg.clientWidth - clientWidth / 2)
-              : dlg.clientWidth / 2 + clientWidth / 2 - dlg.clientWidth) - pad;
-
-          const minTop = pad;
-          const maxTop = clientHeight - dlg.clientHeight - pad;
-
-          // Start move
-          document.onmousemove = (e) => {
-            let left = e.clientX - dis.left + box.left;
-            let top = e.clientY - dis.top + box.top;
-
-            if (left < minLeft) {
-              left = minLeft;
-            } else if (left >= maxLeft) {
-              left = maxLeft;
-            }
-
-            if (top < minTop) {
-              top = minTop;
-            } else if (top >= maxTop) {
-              top = maxTop;
-            }
-
-            // Set dialog top and left
-            dlg.style.top = top + "px";
-            dlg.style.left = left + "px";
+        } else {
+          return {
+            top: +top.replace(/\px/g, ""),
+            left: +left.replace(/\px/g, ""),
           };
+        }
+      })();
 
-          // Clear event
-          document.onmouseup = () => {
-            document.onmousemove = null;
-            document.onmouseup = null;
-          };
-        };
-      });
+      // Screen limit
+      const pad = 5;
+      const minLeft = -(clientWidth - dlg.clientWidth) / 2 + pad;
+      const maxLeft =
+        (dlg.clientWidth >= clientWidth / 2
+          ? dlg.clientWidth / 2 - (dlg.clientWidth - clientWidth / 2)
+          : dlg.clientWidth / 2 + clientWidth / 2 - dlg.clientWidth) - pad;
+
+      const minTop = pad;
+      const maxTop = clientHeight - dlg.clientHeight - pad;
+
+      // Start move
+      const onMousemove = (e) => {
+        let left = e.clientX - dis.left + box.left;
+        let top = e.clientY - dis.top + box.top;
+
+        if (left < minLeft) {
+          left = minLeft;
+        } else if (left >= maxLeft) {
+          left = maxLeft;
+        }
+
+        if (top < minTop) {
+          top = minTop;
+        } else if (top >= maxTop) {
+          top = maxTop;
+        }
+
+        // Set dialog top and left
+        dlg.style.top = top + "px";
+        dlg.style.left = left + "px";
+      };
+      on(document, "mousemove", onMousemove);
+      // Clear event
+      document.onmouseup = () => {
+        document.onmouseup = null;
+        off(document, "mousemove", onMousemove);
+      };
     },
   },
 };

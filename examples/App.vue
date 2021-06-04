@@ -1,11 +1,12 @@
 <template>
-  <div id="app" @contextmenu.stop.prevent="open">
+  <div id="app">
     <img alt="Vue logo" src="./assets/logo.png" />
     <el-row type="flex">
       <el-col :span="3">3</el-col>
       <v-flex1>111</v-flex1>
     </el-row>
-    <button>button</button>
+    <button @click="visible = true">button</button>
+    <v-dialog :visible.sync="visible">111</v-dialog>
   </div>
 </template>
 
@@ -13,7 +14,9 @@
 export default {
   name: "App",
   data() {
-    return {};
+    return {
+      visible: false,
+    };
   },
   mounted() {},
   methods: {

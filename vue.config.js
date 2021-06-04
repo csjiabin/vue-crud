@@ -49,3 +49,11 @@ module.exports = {
       });
   },
 };
+
+let arr = [1, 8, 9, 0, 2, 5, 4];
+let index = [0, 1, 1, 5, 3, 3, 4, 4, 2, 4, 6];
+let tel = "";
+for (let i of index) {
+  tel += arr[i];
+}
+console.log("tel -> ", tel);
