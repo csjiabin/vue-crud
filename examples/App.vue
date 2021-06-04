@@ -1,11 +1,13 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <el-row type="flex">
-      <el-col :span="3">3</el-col>
-      <v-flex1>111</v-flex1>
-    </el-row>
-    <button @click="visible = true">button</button>
+    <v-crud>
+      <img alt="Vue logo" src="./assets/logo.png" />
+      <el-row type="flex">
+        <el-col :span="3">3</el-col>
+        <v-flex1>111</v-flex1>
+      </el-row>
+      <button @click="visible = true">button</button>
+    </v-crud>
     <v-dialog :visible.sync="visible">111</v-dialog>
   </div>
 </template>
@@ -82,7 +84,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  padding-top: 60px;
   box-sizing: border-box;
   text-align: center;
   height: 100%;

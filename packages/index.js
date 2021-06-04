@@ -6,9 +6,9 @@ const install = function (Vue, options = {}) {
   // 样式
   if (!crud.style) crud.style = {};
   // 缓存配置
-  Vue.prototype.$__crud = crud;
-  Vue.prototype.$__vue = Vue;
-  Vue.prototype.$__inst = new Vue();
+  Vue.prototype.$_crud = crud;
+  Vue.prototype.$_vue = Vue;
+  Vue.prototype.$_inst = new Vue();
   // // eslint-disable-next-line no-undef
   // store.__crud = crud;
   // // eslint-disable-next-line no-undef
