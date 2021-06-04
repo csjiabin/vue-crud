@@ -9,19 +9,10 @@ const install = function (Vue, options = {}) {
   Vue.prototype.$_crud = crud;
   Vue.prototype.$_vue = Vue;
   Vue.prototype.$_inst = new Vue();
-  // // eslint-disable-next-line no-undef
-  // store.__crud = crud;
-  // // eslint-disable-next-line no-undef
-  // store.__vue = Vue;
-  // // eslint-disable-next-line no-undef
-  // store.__inst = new Vue();
   // 注册组件
   for (let i in components) {
     Vue.use(components[i]);
   }
-  // components.map((component) => {
-  //   Vue.use(component);
-  // });
 };
 //  全局引用可自动安装
 if (typeof window !== "undefined" && window.Vue) {
