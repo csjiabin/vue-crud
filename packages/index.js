@@ -1,8 +1,8 @@
-import * as components from "./components";
+import components from "./components";
 // import * as store from "./store";
 const install = function (Vue, options = {}) {
   if (install.installed) return;
-  const { crud = {} } = options;
+  const { alias = "cl-crud", ...crud } = options;
   // 样式
   if (!crud.style) crud.style = {};
   // 缓存配置
@@ -19,8 +19,6 @@ if (typeof window !== "undefined" && window.Vue) {
   install(window.Vue);
 }
 export default {
-  version: "__VERSION__",
+  version: '__VERSION__',
   install,
 };
-
-export { components };

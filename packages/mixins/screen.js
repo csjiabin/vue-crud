@@ -1,3 +1,4 @@
+import { on, off } from "../utils";
 export default {
   data() {
     return {
@@ -27,8 +28,11 @@ export default {
         this.screen = "full";
       }
     };
-
-    window.addEventListener("resize", fn);
     fn();
+    on(window, 'resize', fn)
+    // 记得销毁一些全局的的事件
+    this.$once("hook:beforeDestroy", () => {
+      off(window, 'resize', fn)
+    });
   },
 };

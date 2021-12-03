@@ -1,18 +1,23 @@
 <template>
   <div id="app">
+    hello word
     <v-crud>
-      <img alt="Vue logo" src="./assets/logo.png" />
+      <div>
+        <el-button type="primary" @click="openContextMenu">
+          context menu
+        </el-button>
+      </div>
       <el-row type="flex">
-        <el-col :span="3">3</el-col>
-        <v-flex1>111</v-flex1>
+        <el-col :span="8">8</el-col>
+        <v-flex1>flex1</v-flex1>
       </el-row>
-      <button @click="visible = true">button</button>
+      <el-button @click="visible = true">button</el-button>
+      <v-dialog :visible.sync="visible" width="500px">dialog</v-dialog>
     </v-crud>
-    <v-dialog :visible.sync="visible">111</v-dialog>
   </div>
 </template>
 
-<script>
+<script lang="jsx">
 export default {
   name: "App",
   data() {
@@ -20,9 +25,8 @@ export default {
       visible: false,
     };
   },
-  mounted() {},
   methods: {
-    open(event) {
+    openContextMenu(event) {
       this.$crud.openContextMenu(event, {
         list: [
           {
@@ -44,6 +48,19 @@ export default {
           {
             label: "删除",
             "suffix-icon": "el-icon-delete",
+            callback: (_, done) => {
+              this.$message.info("点击了删除");
+              done();
+            },
+          },
+          {
+            render(h) {
+              return <div>render自定义内容</div>;
+            },
+            callback: (_, done) => {
+              this.$message.info("点击了自定义内容");
+              done();
+            },
           },
           {
             label: "二级",

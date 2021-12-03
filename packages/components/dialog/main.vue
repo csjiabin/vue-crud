@@ -61,8 +61,8 @@
   </el-dialog>
 </template>
 <script>
-import Screen from "~/mixins/screen";
-import { isBoolean, on, off } from "~/utils";
+import Screen from "vue-crud/mixins/screen";
+import { isBoolean, on, off } from "vue-crud/utils";
 export default {
   name: "v-dialog",
   mixins: [Screen],
@@ -121,7 +121,6 @@ export default {
     isFullscreen() {
       return this.isMini ? true : this.fullscreen;
     },
-
     _height() {
       return this.height
         ? this.isFullscreen
@@ -137,7 +136,6 @@ export default {
     isFullscreen(v) {
       if (this.$el && this.$el.querySelector) {
         const el = this.$el.querySelector(".el-dialog");
-
         if (el) {
           el.style = v ? { top: 0, left: 0 } : { marginBottom: "50px" };
           el.querySelector(".el-dialog__header").style.cursor = v
@@ -145,7 +143,6 @@ export default {
             : "move";
         }
       }
-
       if (this.crud) {
         this.crud.$emit("fullscreen-change");
       }
@@ -175,7 +172,6 @@ export default {
       if (!this.keepAlive) {
         this.cacheKey++;
       }
-
       this.$emit("update:visible", true);
       this.$emit("open");
     },
@@ -192,12 +188,10 @@ export default {
     close() {
       this.$emit("update:visible", false);
     },
-
     onClose() {
       this.$emit("close");
       this.close();
     },
-
     onClosed() {
       this.$emit("closed");
     },
@@ -211,61 +205,48 @@ export default {
       const hdr = this.$el.querySelector(".el-dialog__header");
       // Props
       const { top = "15vh" } = this.props;
-
       // Body size
       const { clientWidth, clientHeight } = document.documentElement;
-
       // Try drag
       const isDrag = (() => {
         if (this.fullscreen) {
           return false;
         }
-
         if (!this.drag) {
           return false;
         }
-
         // Determine height of the box is too large
         let marginTop = 0;
-
         if (["vh", "%"].some((e) => top.includes(e))) {
           marginTop = clientHeight * (parseInt(top) / 100);
         }
-
         if (top.includes("px")) {
           marginTop = top;
         }
-
         if (dlg.clientHeight > clientHeight - 50 - marginTop) {
           return false;
         }
-
         return true;
       })();
-
       // Set header cursor state
       if (!isDrag) {
         return (hdr.style.cursor = "text");
       } else {
         hdr.style.cursor = "move";
       }
-
       // Set el-dialog style, hidden scroller
       dlg.style.marginTop = 0;
       dlg.style.marginBottom = 0;
       dlg.style.top = dlg.style.top || top;
-
       // Distance
       const dis = {
         left: e.clientX - hdr.offsetLeft,
         top: e.clientY - hdr.offsetTop,
       };
-
       // Calc left and top of the box
       const box = (() => {
         const { left, top } =
           dlg.currentStyle || window.getComputedStyle(dlg, null);
-
         if (left.includes("%")) {
           return {
             top: +clientHeight * (+top.replace(/\%/g, "") / 100),
@@ -278,7 +259,6 @@ export default {
           };
         }
       })();
-
       // Screen limit
       const pad = 5;
       const minLeft = -(clientWidth - dlg.clientWidth) / 2 + pad;
@@ -286,27 +266,22 @@ export default {
         (dlg.clientWidth >= clientWidth / 2
           ? dlg.clientWidth / 2 - (dlg.clientWidth - clientWidth / 2)
           : dlg.clientWidth / 2 + clientWidth / 2 - dlg.clientWidth) - pad;
-
       const minTop = pad;
       const maxTop = clientHeight - dlg.clientHeight - pad;
-
       // Start move
       const onMousemove = (e) => {
         let left = e.clientX - dis.left + box.left;
         let top = e.clientY - dis.top + box.top;
-
         if (left < minLeft) {
           left = minLeft;
         } else if (left >= maxLeft) {
           left = maxLeft;
         }
-
         if (top < minTop) {
           top = minTop;
         } else if (top >= maxTop) {
           top = maxTop;
         }
-
         // Set dialog top and left
         dlg.style.top = top + "px";
         dlg.style.left = left + "px";
@@ -328,21 +303,17 @@ export default {
       padding: 10px !important;
       text-align: center;
       border-bottom: 1px solid #f7f7f7;
-
       .el-dialog__title {
         font-size: 15px;
         letter-spacing: 0.5px;
       }
-
       .el-dialog__headerbtn {
         display: none;
         top: 13px;
-
         .el-dialog__close {
           font-size: 18px;
         }
       }
-
       &-slot {
         &.is-drag {
           user-select: none;
@@ -350,30 +321,25 @@ export default {
         }
       }
     }
-
     &__body {
       padding: 20px;
     }
-
     &__footer {
       padding-bottom: 15px;
       border-top: 1px solid #f7f7f7;
     }
   }
-
   &__header {
     height: 25px;
     line-height: 25px;
     text-align: center;
     position: relative;
   }
-
   &__title {
     display: block;
     font-size: 15px;
     letter-spacing: 0.5px;
   }
-
   &__controls {
     display: flex;
     justify-content: flex-end;
@@ -382,7 +348,6 @@ export default {
     top: 0;
     z-index: 9;
     width: 100%;
-
     button,
     .minimize,
     .maximize,
@@ -396,17 +361,14 @@ export default {
       background-color: #fff;
       cursor: pointer;
       outline: none;
-
       i {
         font-size: 16px;
-
         &:hover {
           opacity: 0.7;
         }
       }
     }
   }
-
   &.hidden-header {
     .el-dialog__header {
       display: none;

@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import Emitter from "~/mixins/emitter";
+import Emitter from "vue-crud/mixins/emitter";
 export default {
   name: "v-crud",
   props: {

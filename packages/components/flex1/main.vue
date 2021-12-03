@@ -11,6 +11,5 @@ export default {
 <style lang="scss">
 .v-flex1 {
   flex: 1;
-  font-size: 12px;
 }
 </style>

@@ -1,5 +1,5 @@
 import ContextMenu from "./main.vue";
-import { getInstance } from "~/utils";
+import { getInstance } from "vue-crud/utils";
 
 const instance = getInstance(ContextMenu);
 instance.$mount();
