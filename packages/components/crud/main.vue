@@ -5,6 +5,8 @@
 </template>
 <script>
 import Emitter from "vue-crud/mixins/emitter";
+import { deepMerge } from "vue-crud/utils";
+
 export default {
   name: "v-crud",
   props: {
@@ -94,6 +96,21 @@ export default {
         filterSearchBtn: {},
       },
     };
+  },
+  created() {
+    const { options } = this.$crud;
+    // 合并全局配置
+    deepMerge(this, options);
+    this.$on("table.selection-change", this.tableSelectionChange);
+    this.$once("hook:beforeDestroy", () => {
+      this.$off("table.selection-change", this.tableSelectionChange);
+    });
+  },
+  mounted() {},
+  methods: {
+    tableSelectionChange({ selection }) {
+      this.selection = selection;
+    },
   },
 };
 </script>

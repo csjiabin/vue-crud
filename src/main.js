@@ -17,6 +17,10 @@ Vue.use(VueCrud, {
       return index + 1 + (crud.params.page - 1) * crud.params.size;
     },
   },
+  params: {
+    page: 1,
+    size: 20,
+  },
   style: {
     refreshBtn: {},
     addBtn: {},

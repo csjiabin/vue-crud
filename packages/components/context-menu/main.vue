@@ -6,9 +6,11 @@
     v-show="visible"
     v-resize="close"
   >
-    <slot>
-      <menu-list :list="list" :index="index" @click-node="clickNode" />
-    </slot>
+    <div class="v-context-menu__box">
+      <slot>
+        <menu-list :list="list" :index="index" @click-node="clickNode" />
+      </slot>
+    </div>
   </div>
 </template>
 <script>
@@ -33,6 +35,14 @@ export default {
       },
       list: [],
     };
+  },
+  watch: {
+    list: {
+      deep: true,
+      handler(v) {
+        console.log(v);
+      },
+    },
   },
   created() {
     on(document.body, "mousedown", this.onMousedown);
@@ -59,7 +69,7 @@ export default {
       this.visible = true;
       this.index = "";
       this.$nextTick(() => {
-        const el = this.$el.querySelector(".v-context-menu-list");
+        const el = this.$el.querySelector(".v-context-menu__box");
         if (!el) return;
         const { clientHeight: h1, clientWidth: w1 } = document.body;
         const { clientHeight: h2, clientWidth: w2 } = el;

@@ -1,9 +1,10 @@
+import { on, off } from "../utils/index";
 export default {
   inserted(el, binding) {
     const callback = binding.value;
     const options = binding.options || { passive: true };
 
-    window.addEventListener("resize", callback, options);
+    on(window, 'resize', callback, options)
     el._onResize = {
       callback,
       options,
@@ -15,9 +16,8 @@ export default {
   },
   unbind(el) {
     if (!el._onResize) return;
-
     const { callback, options } = el._onResize;
-    window.removeEventListener("resize", callback, options);
+    off(window, 'resize', callback, options)
     delete el._onResize;
   },
 };

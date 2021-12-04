@@ -1,4 +1,4 @@
 import resize from "./resize";
 import clickOutside from "./click-outside";
-
-export { resize, clickOutside };
+import contextMenu from "./contextmenu";
+export { resize, clickOutside, contextMenu };

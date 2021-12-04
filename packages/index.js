@@ -1,14 +1,18 @@
 import components from "./components";
-// import * as store from "./store";
 const install = function (Vue, options = {}) {
-  if (install.installed) return;
-  const { alias = "cl-crud", ...crud } = options;
   // 样式
-  if (!crud.style) crud.style = {};
+  if (!options.style) options.style = {};
+  // 表格
+  if (!options.table) options.table = {};
+
   // 缓存配置
-  Vue.prototype.$_crud = crud;
-  Vue.prototype.$_vue = Vue;
-  Vue.prototype.$_inst = new Vue();
+  Vue.prototype.$crud = {
+    options,
+    vue: Vue,
+    inst: new Vue(),
+    components
+  }
+  // 缓存配置
   // 注册组件
   for (let i in components) {
     Vue.use(components[i]);

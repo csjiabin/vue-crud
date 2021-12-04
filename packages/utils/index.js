@@ -1,6 +1,5 @@
 import cloneDeep from "clone-deep";
 import flat from "array.prototype.flat";
-import { __inst } from "../store";
 import Vue from "vue";
 
 export function isArray(value) {
@@ -105,7 +104,7 @@ export function dataset(obj, key, value) {
         if (isGet) {
           return d[n];
         } else {
-          __inst.$set(d, n, value);
+          Vue.set(d, n, value);
         }
       }
     }
@@ -147,12 +146,13 @@ export function getInstance(component) {
  * @param {HTMLElement} element
  * @param {string} event
  * @param {function} handler
+ * @param {boolean | AddEventListenerOptions} options?
  */
 export const on = (function () {
   if (document.addEventListener) {
-    return function (element, event, handler) {
+    return function (element, event, handler, options = false) {
       if (element && event && handler) {
-        element.addEventListener(event, handler, false);
+        element.addEventListener(event, handler, options);
       }
     };
   } else {
@@ -167,12 +167,13 @@ export const on = (function () {
  * @param {HTMLElement} element
  * @param {string} event
  * @param {function} handler
+ * @param {boolean | AddEventListenerOptions} options?
  */
 export const off = (function () {
   if (document.removeEventListener) {
-    return function (element, event, handler) {
+    return function (element, event, handler, options = false) {
       if (element && event) {
-        element.removeEventListener(event, handler, false);
+        element.removeEventListener(event, handler, options);
       }
     };
   } else {

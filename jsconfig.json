@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"],
+      "vue-crud/*": ["packages/"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}

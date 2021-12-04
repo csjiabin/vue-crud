@@ -1,3 +1,5 @@
+import { on, off } from "../utils/index";
+
 function defaultConditional() {
   return true;
 }
@@ -30,15 +32,14 @@ export default {
 
     const app =
       document.querySelector("[data-app]") || document.documentElement;
-    app.addEventListener("click", onClick, true);
+    on(app, 'click', onClick, true)
     el._clickOutside = onClick;
   },
   unbind(el) {
     if (!el._clickOutside) return;
-
     const app =
       document.querySelector("[data-app]") || document.documentElement;
-    app && app.removeEventListener("click", el._clickOutside, true);
+    app && off(app, 'click', el._clickOutside, true);
     delete el._clickOutside;
   },
 };

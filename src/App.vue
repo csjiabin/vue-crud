@@ -23,67 +23,68 @@ export default {
   data() {
     return {
       visible: false,
+      contextMenu: [
+        {
+          label: "新增",
+          "suffix-icon": "el-icon-plus",
+          callback: (_, done) => {
+            this.$message.info("点击了新增");
+            done();
+          },
+        },
+        {
+          label: "编辑",
+          "suffix-icon": "el-icon-edit",
+          callback: (_, done) => {
+            this.$message.info("点击了编辑");
+            done();
+          },
+        },
+        {
+          label: "删除",
+          "suffix-icon": "el-icon-delete",
+          callback: (_, done) => {
+            this.$message.info("点击了删除");
+            done();
+          },
+        },
+        {
+          render(h) {
+            return <div>render自定义内容</div>;
+          },
+          callback: (_, done) => {
+            this.$message.info("点击了自定义内容");
+            done();
+          },
+        },
+        {
+          label: "二级",
+          "suffix-icon": "el-icon-right",
+          children: [
+            {
+              label: "文本超出隐藏，有一天晚上",
+              ellipsis: true,
+            },
+            {
+              label: "禁用",
+              disabled: true,
+            },
+            {
+              label: "更多",
+              callback: (_, done) => {
+                this.$message.warning("开发中");
+                done();
+              },
+            },
+          ],
+        },
+      ],
     };
   },
   methods: {
     openContextMenu(event) {
       this.$crud.openContextMenu(event, {
-        list: [
-          {
-            label: "新增",
-            "suffix-icon": "el-icon-plus",
-            callback: (_, done) => {
-              this.$message.info("点击了新增");
-              done();
-            },
-          },
-          {
-            label: "编辑",
-            "suffix-icon": "el-icon-edit",
-            callback: (_, done) => {
-              this.$message.info("点击了编辑");
-              done();
-            },
-          },
-          {
-            label: "删除",
-            "suffix-icon": "el-icon-delete",
-            callback: (_, done) => {
-              this.$message.info("点击了删除");
-              done();
-            },
-          },
-          {
-            render(h) {
-              return <div>render自定义内容</div>;
-            },
-            callback: (_, done) => {
-              this.$message.info("点击了自定义内容");
-              done();
-            },
-          },
-          {
-            label: "二级",
-            "suffix-icon": "el-icon-right",
-            children: [
-              {
-                label: "文本超出隐藏，有一天晚上",
-                ellipsis: true,
-              },
-              {
-                label: "禁用",
-                disabled: true,
-              },
-              {
-                label: "更多",
-                callback: (_, done) => {
-                  this.$message.warning("开发中");
-                  done();
-                },
-              },
-            ],
-          },
-        ],
+        list: this.contextMenu,
       });
     },
   },
