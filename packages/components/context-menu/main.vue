@@ -36,14 +36,6 @@ export default {
       list: [],
     };
   },
-  watch: {
-    list: {
-      deep: true,
-      handler(v) {
-        console.log(v);
-      },
-    },
-  },
   created() {
     on(document.body, "mousedown", this.onMousedown);
     this.$once("hook:beforeDestroy", () => {

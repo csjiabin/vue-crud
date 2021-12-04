@@ -1,4 +1,3 @@
-import resize from "./resize";
-import clickOutside from "./click-outside";
-import contextMenu from "./contextmenu";
-export { resize, clickOutside, contextMenu };
+export { default as resize } from "./resize";
+export { default as clickOutside } from "./click-outside";
+export { default as contextMenu } from "./contextmenu";

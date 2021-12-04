@@ -6,7 +6,9 @@ import Vnodes from "./vnodes";
 const modulesFiles = import.meta.globEager("./**/index.js") // vite
 let components = Object.values(modulesFiles).reduce((prev, curr) => {
   let component = curr.default
-  prev[component.name] = component
+  if (component && component.name) {
+    prev[component.name] = component
+  }
   return prev
 }, {})
 export { Crud, ContextMenu, Dialog, Flex1, Vnodes };

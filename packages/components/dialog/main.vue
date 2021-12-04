@@ -61,7 +61,7 @@
   </el-dialog>
 </template>
 <script>
-import Screen from "vue-crud/mixins/screen";
+import { Screen } from "vue-crud/mixins";
 import { isBoolean, on, off } from "vue-crud/utils";
 export default {
   name: "v-dialog",

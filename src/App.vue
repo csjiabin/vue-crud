@@ -13,6 +13,7 @@
       </el-row>
       <el-button @click="visible = true">button</el-button>
       <v-dialog :visible.sync="visible" width="500px">dialog</v-dialog>
+      <v-table :columns="[]"></v-table>
     </v-crud>
   </div>
 </template>

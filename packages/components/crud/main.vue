@@ -4,11 +4,12 @@
   </div>
 </template>
 <script>
-import Emitter from "vue-crud/mixins/emitter";
+import { Emitter } from "vue-crud/mixins";
 import { deepMerge } from "vue-crud/utils";
 
 export default {
   name: "v-crud",
+  mixins: [Emitter],
   props: {
     // 是否带有边框
     border: Boolean,
@@ -17,7 +18,6 @@ export default {
     // 刷新钩子 { params, { next, done, render } }
     onRefresh: Function,
   },
-  mixins: [Emitter],
   provide() {
     return {
       crud: this,
@@ -68,6 +68,7 @@ export default {
           prop: "prop",
         },
         label: {
+          refresh: "刷新",
           add: "新增",
           delete: "删除",
           multiDelete: "删除",
@@ -99,6 +100,7 @@ export default {
   },
   created() {
     const { options } = this.$crud;
+    // console.log(options);
     // 合并全局配置
     deepMerge(this, options);
     this.$on("table.selection-change", this.tableSelectionChange);
@@ -110,6 +112,10 @@ export default {
   methods: {
     tableSelectionChange({ selection }) {
       this.selection = selection;
+    },
+    // 重新渲染布局
+    doLayout() {
+      this.broadcast("v-table", "resize");
     },
   },
 };

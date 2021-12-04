@@ -1,10 +1,5 @@
 import components from "./components";
 const install = function (Vue, options = {}) {
-  // 样式
-  if (!options.style) options.style = {};
-  // 表格
-  if (!options.table) options.table = {};
-
   // 缓存配置
   Vue.prototype.$crud = {
     options,
