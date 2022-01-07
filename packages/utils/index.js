@@ -2,6 +2,8 @@ import cloneDeep from "clone-deep";
 import flat from "array.prototype.flat";
 import Vue from "vue";
 
+export { cloneDeep, flat };
+
 export function isArray(value) {
   if (typeof Array.isArray === "function") {
     return Array.isArray(value);
@@ -200,4 +202,37 @@ export const once = function (el, event, fn) {
   on(el, event, listener);
 };
 
-export { cloneDeep, flat };
+/**
+ * 解析 hidden 参数的几个场景
+ * @param {string} method
+ * @param {function({ value, scope, data = {} })} fn
+ */
+export function parse(method, { value, scope, data = {} }) {
+  if (method === "hidden") {
+    if (isBoolean(value)) {
+      return value;
+    } else if (isString(value)) {
+      const prop = value.substring(1, value.length);
+
+      switch (value[0]) {
+        case "@":
+          return !scope[prop];
+        case ":":
+          return data[prop];
+      }
+    } else if (isFunction(value)) {
+      return value({ scope, ...data });
+    }
+    return false;
+  }
+}
+
+// -转小驼峰
+export function toHump(name) {
+  return name.replace(/\-(\w)/g, (_, letter) => letter.toUpperCase());
+}
+
+// 驼峰转换横杠
+export function toLine(name) {
+  return name.replace(/([A-Z])/g, "-$1").toLowerCase();
+}

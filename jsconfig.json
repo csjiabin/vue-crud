@@ -4,7 +4,7 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"],
-      "vue-crud/*": ["packages/"]
+      "vue-crud/*": ["packages/*"]
     }
   },
   "exclude": ["node_modules", "dist"]

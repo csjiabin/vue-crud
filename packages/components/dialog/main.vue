@@ -39,7 +39,7 @@
               :key="index"
               type="button"
               class="close"
-              @click="beforeClose"
+              @click="handleBeforeClose"
             >
               <i class="el-icon-close" />
             </button>
@@ -66,6 +66,7 @@ import { isBoolean, on, off } from "vue-crud/utils";
 export default {
   name: "v-dialog",
   mixins: [Screen],
+
   props: {
     visible: Boolean,
     title: {
@@ -134,14 +135,12 @@ export default {
       this.fullscreen = v;
     },
     isFullscreen(v) {
-      if (this.$el && this.$el.querySelector) {
-        const el = this.$el.querySelector(".el-dialog");
-        if (el) {
-          el.style = v ? { top: 0, left: 0 } : { marginBottom: "50px" };
-          el.querySelector(".el-dialog__header").style.cursor = v
-            ? "text"
-            : "move";
-        }
+      const el = this.$el?.querySelector?.(".el-dialog");
+      if (el) {
+        el.style = v ? { top: 0, left: 0 } : { marginBottom: "50px" };
+        el.querySelector(".el-dialog__header").style.cursor = v
+          ? "text"
+          : "move";
       }
       if (this.crud) {
         this.crud.$emit("fullscreen-change");
@@ -158,7 +157,7 @@ export default {
     },
   },
   mounted() {
-    const hdr = this.$el.querySelector(".el-dialog__header");
+    const hdr = this.$el?.querySelector?.(".el-dialog__header");
     if (!hdr) {
       return false;
     }
@@ -178,12 +177,13 @@ export default {
     onOpened() {
       this.$emit("opened");
     },
-    beforeClose() {
-      if (this.props["before-close"]) {
-        this.props["before-close"](this.close);
-      } else {
-        this.close();
+    handleBeforeClose() {
+      let beforeClose = this.props["before-close"] || this.props["beforeClose"];
+      if (beforeClose) {
+        beforeClose(this.close);
+        return;
       }
+      this.close();
     },
     close() {
       this.$emit("update:visible", false);
@@ -230,7 +230,8 @@ export default {
       })();
       // Set header cursor state
       if (!isDrag) {
-        return (hdr.style.cursor = "text");
+        hdr.style.cursor = "text";
+        return;
       } else {
         hdr.style.cursor = "move";
       }

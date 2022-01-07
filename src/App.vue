@@ -2,7 +2,7 @@
   <div id="app">
     hello word
     <v-crud>
-      <div>
+      <!-- <div>
         <el-button type="primary" @click="openContextMenu">
           context menu
         </el-button>
@@ -10,10 +10,10 @@
       <el-row type="flex">
         <el-col :span="8">8</el-col>
         <v-flex1>flex1</v-flex1>
-      </el-row>
+      </el-row> -->
       <el-button @click="visible = true">button</el-button>
       <v-dialog :visible.sync="visible" width="500px">dialog</v-dialog>
-      <v-table :columns="[]"></v-table>
+      <v-table v-bind="table"> </v-table>
     </v-crud>
   </div>
 </template>
@@ -24,6 +24,48 @@ export default {
   data() {
     return {
       visible: false,
+      table: {
+        ref: "table",
+        props: {
+          border: true,
+        },
+        on: {
+          "sort-change": (args) => {
+            console.log(args);
+          },
+        },
+        columns: [
+          {
+            label: "column 1",
+            prop: "column1",
+            minWidth: 100,
+            children: [
+              {
+                label: "column 1-1",
+                prop: "column1-1",
+                minWidth: 100,
+              },
+            ],
+          },
+          {
+            label: "column 2",
+            prop: "column2",
+            minWidth: 100,
+            children: [
+              {
+                label: "column 2-1",
+                prop: "column2-1",
+                minWidth: 100,
+                children: [
+                  { label: "column 2-1-1", prop: "column2-1-1", minWidth: 100 },
+                  { label: "column 2-1-2", prop: "column2-1-2", minWidth: 100 },
+                ],
+              },
+              { label: "column 2-2", prop: "column2-2", minWidth: 100 },
+            ],
+          },
+        ],
+      },
       contextMenu: [
         {
           label: "新增",

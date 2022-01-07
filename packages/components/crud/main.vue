@@ -81,6 +81,7 @@ export default {
       },
       table: {
         "context-menu": true,
+        align: "left",
       },
       fn: {
         permission: null,
