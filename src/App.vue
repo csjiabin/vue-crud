@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    hello word
-    <v-crud>
+    <v-crud border>
+      hello word
       <!-- <div>
         <el-button type="primary" @click="openContextMenu">
           context menu
@@ -148,5 +148,6 @@ body {
   box-sizing: border-box;
   text-align: center;
   height: 100%;
+  padding: 10px;
 }
 </style>

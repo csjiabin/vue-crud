@@ -1,5 +1,5 @@
 <template>
-  <div class="v-crud" v-on="$listeners">
+  <div :class="['v-crud', { 'is-border': border }]" v-on="$listeners">
     <slot />
   </div>
 </template>

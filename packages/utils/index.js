@@ -4,16 +4,17 @@ import Vue from "vue";
 
 export { cloneDeep, flat };
 
+const type = Object.prototype.toString;
+
 export function isArray(value) {
   if (typeof Array.isArray === "function") {
     return Array.isArray(value);
   } else {
-    return Object.prototype.toString.call(value) === "[object Array]";
+    return type.call(value) === "[object Array]";
   }
 }
-
 export function isObject(value) {
-  return Object.prototype.toString.call(value) === "[object Object]";
+  return type.call(value) === "[object Object]";
 }
 
 export function isNumber(value) {
@@ -28,12 +29,16 @@ export function isString(value) {
   return typeof value === "string";
 }
 
-export function isNull(value) {
-  return !value && value !== 0;
-}
-
 export function isBoolean(value) {
   return typeof value === "boolean";
+}
+
+export function isNull(value) {
+  return value === null;
+}
+
+export function isUndef(value) {
+  return value === undefined
 }
 
 export function isEmpty(value) {
@@ -45,7 +50,7 @@ export function isEmpty(value) {
     return Object.keys(value).length === 0;
   }
 
-  return value === "" || value === undefined || value === null;
+  return value === "" || isUndef(value) || isNull(value);
 }
 
 export function clone(obj) {

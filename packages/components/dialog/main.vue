@@ -62,7 +62,7 @@
 </template>
 <script>
 import { Screen } from "vue-crud/mixins";
-import { isBoolean, on, off } from "vue-crud/utils";
+import { isBoolean, on, off, once } from "vue-crud/utils";
 export default {
   name: "v-dialog",
   mixins: [Screen],
@@ -116,6 +116,7 @@ export default {
     return {
       cacheKey: 0,
       fullscreen: this.props.fullscreen,
+      onMousemove: null,
     };
   },
   computed: {
@@ -201,8 +202,12 @@ export default {
     },
     // 拖动事件
     dragEvent(e) {
+      if (this.onMousemove) {
+        off(document, "mousemove", this.onMousemove);
+        this.onMousemove = null;
+      }
       const dlg = this.$el.querySelector(".el-dialog");
-      const hdr = this.$el.querySelector(".el-dialog__header");
+      const hdr = dlg.querySelector(".el-dialog__header");
       // Props
       const { top = "15vh" } = this.props;
       // Body size
@@ -287,12 +292,19 @@ export default {
         dlg.style.top = top + "px";
         dlg.style.left = left + "px";
       };
-      on(document, "mousemove", onMousemove);
+      this.onMousemove = onMousemove;
+      // document.onmousemove = onMousemove;
+      on(document, "mousemove", this.onMousemove);
       // Clear event
-      document.onmouseup = () => {
-        document.onmouseup = null;
-        off(document, "mousemove", onMousemove);
-      };
+      once(document, "mouseup", () => {
+        off(document, "mousemove", this.onMousemove);
+      });
+      // document.onmouseup = () => {
+      //   document.onmouseup = null;
+      //   console.log("onmouseup");
+      //   // document.onmousemove = null;
+      //   off(document, "mousemove", this.onMousemove);
+      // };
     },
   },
 };
