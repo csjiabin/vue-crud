@@ -35,11 +35,8 @@ export default {
         props: {
           border: true,
         },
-        on: {
-          "sort-change": (args) => {
-            console.log(args);
-          },
-        },
+        on: {},
+        data: [{ id: 1 }],
         columns: [
           {
             label: "column 1",

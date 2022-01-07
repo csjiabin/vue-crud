@@ -27,6 +27,10 @@ export default {
     Vnodes,
   },
   props: {
+    data: {
+      type: Array,
+      default: () => [],
+    },
     columns: {
       type: Array,
       required: true,
@@ -65,7 +69,7 @@ export default {
   data() {
     return {
       maxHeight: null,
-      data: [],
+      list: this.data,
       emit: {},
     };
   },
@@ -74,7 +78,7 @@ export default {
       return this.props["empty-text"] || this.props["emptyText"];
     },
     tableProps() {
-      const { table = {} } = this.crud;
+      const { table = {} } = this.crud || {};
       let emptyText = "";
       if (isString(table.empty)) {
         emptyText = table.empty;
@@ -85,6 +89,7 @@ export default {
       return {
         ...this.props,
         emptyText,
+        data: this.list,
       };
     },
     listeners() {
@@ -94,22 +99,30 @@ export default {
       };
     },
     _align() {
-      const { table = {} } = this.crud;
+      const { table = {} } = this.crud || {};
       return this.align || table.align;
+    },
+  },
+  watch: {
+    data: {
+      deep: true,
+      handler(v) {
+        this.list = v;
+      },
     },
   },
   created() {
     // 获取默认排序
     const { order, prop } = this.props["default-sort"] || {};
-
+    const { params = {} } = this.crud || {};
     if (order && prop) {
-      this.crud.params.order = order === "descending" ? "desc" : "asc";
-      this.crud.params.prop = prop;
+      params.order = order === "descending" ? "desc" : "asc";
+      params.prop = prop;
     }
 
     // 事件监听
     this.$on("crud.refresh", ({ list }) => {
-      this.data = list;
+      this.list = list;
     });
   },
   mounted() {
@@ -118,20 +131,15 @@ export default {
   methods: {
     // 计算表格最大高度
     calcMaxHeight() {
-      if (!this.autoHeight) {
-        return false;
-      }
-
-      return this.$nextTick(() => {
-        const el = this.crud.$el.parentNode;
+      if (!this.autoHeight) return;
+      this.$nextTick(() => {
+        const el = this.crud?.$el?.parentNode;
         let { height = "" } = this.props || {};
 
         if (el) {
           let rows = el.querySelectorAll(".cl-crud .el-row");
 
-          if (!rows[0] || !rows[0].isConnected) {
-            return false;
-          }
+          if (!rows[0] || !rows[0].isConnected) return;
 
           let h = 25;
 
@@ -201,7 +209,7 @@ export default {
     },
     // 渲染空数据
     renderEmpty() {
-      const { table = {} } = this.crud;
+      const { table = {} } = this.crud || {};
       if (isFunction(table.empty)) {
         return table.empty(this.$createElement);
       }
