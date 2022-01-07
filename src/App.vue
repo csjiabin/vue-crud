@@ -12,7 +12,13 @@
         <v-flex1>flex1</v-flex1>
       </el-row> -->
       <el-button @click="visible = true">button</el-button>
-      <v-dialog :visible.sync="visible" width="500px">dialog</v-dialog>
+      <v-dialog
+        :visible.sync="visible"
+        width="500px"
+        :props="{ beforeClose: beforeClose }"
+      >
+        dialog
+      </v-dialog>
       <v-table v-bind="table"> </v-table>
     </v-crud>
   </div>
@@ -129,6 +135,10 @@ export default {
       this.$crud.openContextMenu(event, {
         list: this.contextMenu,
       });
+    },
+    beforeClose(done) {
+      console.log("beforeClose");
+      done();
     },
   },
 };

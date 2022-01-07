@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     ref="dialog"
-    v-bind="props"
+    v-bind="dlgProps"
     :width="width"
     :fullscreen="isFullscreen"
     :visible="visible"
@@ -39,7 +39,7 @@
               :key="index"
               type="button"
               class="close"
-              @click="handleBeforeClose"
+              @click="handleBeforeClose(close)"
             >
               <i class="el-icon-close" />
             </button>
@@ -68,7 +68,10 @@ export default {
   mixins: [Screen],
 
   props: {
-    visible: Boolean,
+    visible: {
+      type: Boolean,
+      default: false,
+    },
     title: {
       type: String,
       default: "对话框",
@@ -90,7 +93,7 @@ export default {
     // el-dialog 参数
     props: {
       type: Object,
-      default: () => ({ fullscreen: false }),
+      default: () => ({ fullscreen: false, top: "15vh" }),
     },
     // el-dialog 事件
     on: {
@@ -117,11 +120,18 @@ export default {
       cacheKey: 0,
       fullscreen: this.props.fullscreen,
       onMousemove: null,
+      _visible: this.visible,
     };
   },
   computed: {
     isFullscreen() {
       return this.isMini ? true : this.fullscreen;
+    },
+    dlgProps() {
+      return {
+        ...this.props,
+        beforeClose: this.handleBeforeClose,
+      };
     },
     _height() {
       return this.height
@@ -136,6 +146,7 @@ export default {
       this.fullscreen = v;
     },
     isFullscreen(v) {
+      if (!this.visible) return;
       const el = this.$el?.querySelector?.(".el-dialog");
       if (el) {
         el.style = v ? { top: 0, left: 0 } : { marginBottom: "50px" };
@@ -147,14 +158,12 @@ export default {
         this.crud.$emit("fullscreen-change");
       }
     },
-    visible: {
-      immediate: true,
-      handler(v) {
-        if (v) return;
-        setTimeout(() => {
-          this.changeFullscreen(false);
-        }, 300);
-      },
+    visible(v) {
+      this._visible = v;
+      if (v) return;
+      setTimeout(() => {
+        this.changeFullscreen(false);
+      }, 300);
     },
   },
   mounted() {
@@ -178,13 +187,13 @@ export default {
     onOpened() {
       this.$emit("opened");
     },
-    handleBeforeClose() {
+    handleBeforeClose(done) {
       let beforeClose = this.props["before-close"] || this.props["beforeClose"];
       if (beforeClose) {
-        beforeClose(this.close);
+        beforeClose(done);
         return;
       }
-      this.close();
+      done();
     },
     close() {
       this.$emit("update:visible", false);
@@ -223,7 +232,7 @@ export default {
         // Determine height of the box is too large
         let marginTop = 0;
         if (["vh", "%"].some((e) => top.includes(e))) {
-          marginTop = clientHeight * (parseInt(top) / 100);
+          marginTop = clientHeight * (Number(top) / 100);
         }
         if (top.includes("px")) {
           marginTop = top;
