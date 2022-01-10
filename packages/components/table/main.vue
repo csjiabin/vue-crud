@@ -12,7 +12,7 @@
 <script lang="jsx">
 import { Emitter, Screen } from "vue-crud/mixins";
 import { resize } from "vue-crud/directives";
-import { isString, isFunction } from "vue-crud/utils";
+import { isString, isFunction, isEmpty, get } from "vue-crud/utils";
 
 import Vnodes from "../vnodes";
 
@@ -38,15 +38,11 @@ export default {
     },
     on: {
       type: Object,
-      default: () => {
-        return {};
-      },
+      default: () => ({}),
     },
     props: {
       type: Object,
-      default: () => {
-        return {};
-      },
+      default: () => ({}),
     },
     // 是否自动计算表格高度
     autoHeight: {
@@ -54,15 +50,16 @@ export default {
       default: true,
     },
     // 开启右键菜单
-    contextMenu: {
-      type: [Boolean, Array],
-      default: undefined,
-    },
+    contextMenu: [Boolean, Array],
     align: String,
     // 排序刷新
     sortRefresh: {
       type: Boolean,
       default: true,
+    },
+    pagination: {
+      type: Object,
+      default: () => ({}),
     },
   },
 
@@ -127,6 +124,7 @@ export default {
   },
   mounted() {
     this.calcMaxHeight();
+    console.log(this.on);
   },
   methods: {
     // 计算表格最大高度
@@ -183,25 +181,72 @@ export default {
           });
         }
       }
-      this.on["sort-change"]?.({ column, prop, order });
+      let sortChange = this.on["sort-change"];
+      sortChange && sortChange({ column, prop, order });
     },
     // column处理
     renderColumns(columns = [], pKey = 0) {
+      const { table = {} } = this.crud || {};
       return columns
-        .filter((column) => !column.hidden)
-        .map((column, index) => {
+        .filter((item) => !item.hidden)
+        .map((item, index) => {
           let key = `${pKey}-${index}`;
-          let params = {
+          let column = {
             props: {
               align: this._align,
-              ...column,
+              ...item,
             },
           };
-          const children = column.children
-            ? this.renderColumns(column.children, key)
+          if (column.type !== "selection") {
+            column.scopedSlots = {
+              default: (scope) => {
+                // 自定义插槽渲染
+                const slot = this.$scopedSlots[`column-${item.prop}`];
+                let value = get(scope.row, item.prop);
+                let newScope = {
+                  ...scope,
+                  value,
+                };
+                if (slot) {
+                  return slot(newScope);
+                }
+                if (item.render) {
+                  return item.render(newScope);
+                }
+                if (item.formatter) {
+                  return item.formatter(
+                    scope.row,
+                    scope.column,
+                    value,
+                    scope.$index
+                  );
+                }
+                if (isEmpty(value)) {
+                  return item.emptyText;
+                }
+                return value;
+              },
+              header: (scope) => {
+                let slot = this.$scopedSlots[`header-${item.prop}`];
+                if (slot) {
+                  return slot(scope);
+                }
+                return item.label;
+              },
+            };
+          }
+          if (column.type == "index") {
+            column.index = (i) => {
+              return table.indexMethod
+                ? table.indexMethod(i, this.crud)
+                : i + 1;
+            };
+          }
+          const children = item.children
+            ? this.renderColumns(item.children, key)
             : null;
           return (
-            <el-table-column key={key} {...params}>
+            <el-table-column key={key} {...column}>
               {children}
             </el-table-column>
           );

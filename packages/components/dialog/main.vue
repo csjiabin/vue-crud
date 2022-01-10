@@ -84,7 +84,10 @@ export default {
       default: "50%",
     },
     // 是否缓存
-    keepAlive: Boolean,
+    keepAlive: {
+      type: Boolean,
+      default: false,
+    },
     // 是否拖动
     drag: {
       type: Boolean,
@@ -98,9 +101,7 @@ export default {
     // el-dialog 事件
     on: {
       type: Object,
-      default: () => {
-        return {};
-      },
+      default: () => ({}),
     },
     controls: {
       type: Array,

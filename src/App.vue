@@ -11,6 +11,7 @@
         <el-col :span="8">8</el-col>
         <v-flex1>flex1</v-flex1>
       </el-row> -->
+      <el-button @click="tableEvent">table</el-button>
       <el-button @click="visible = true">button</el-button>
       <v-dialog
         :visible.sync="visible"
@@ -36,17 +37,20 @@ export default {
           border: true,
         },
         on: {},
-        data: [{ id: 1 }],
+        data: [{ id: 1, a: [{ b: { c: 3 } }] }],
         columns: [
+          { type: "selection" },
+          { type: "index" },
           {
             label: "column 1",
             prop: "column1",
             minWidth: 100,
             children: [
               {
-                label: "column 1-1",
-                prop: "column1-1",
+                label: "ID",
+                prop: "id",
                 minWidth: 100,
+                emptyText: "-",
               },
             ],
           },
@@ -61,7 +65,14 @@ export default {
                 minWidth: 100,
                 children: [
                   { label: "column 2-1-1", prop: "column2-1-1", minWidth: 100 },
-                  { label: "column 2-1-2", prop: "column2-1-2", minWidth: 100 },
+                  {
+                    label: "column 2-1-2",
+                    prop: "column2-1-2",
+                    minWidth: 100,
+                    render: ({ row }) => {
+                      return JSON.stringify(row);
+                    },
+                  },
                 ],
               },
               { label: "column 2-2", prop: "column2-2", minWidth: 100 },
@@ -136,6 +147,9 @@ export default {
     beforeClose(done) {
       console.log("beforeClose");
       done();
+    },
+    tableEvent() {
+      console.log(this.$refs.table);
     },
   },
 };

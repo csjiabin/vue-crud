@@ -1,20 +1,43 @@
+import Vue from "vue";
 import cloneDeep from "clone-deep";
 import flat from "array.prototype.flat";
-import Vue from "vue";
 
-export { cloneDeep, flat };
+import get from './get'
 
-const type = Object.prototype.toString;
+export { cloneDeep, flat, get };
+
+const toString = Object.prototype.toString;
+
+/**
+ * Gets the `toStringTag` of `value`.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @returns {string} Returns the `toStringTag`.
+ */
+export function getTag(value) {
+  if (value == null) {
+    return value === undefined ? '[object Undefined]' : '[object Null]'
+  }
+  return toString.call(value)
+}
+
+
+export function isSymbol(value) {
+  const type = typeof value
+  return type == 'symbol' || (type === 'object' && value != null && getTag(value) == '[object Symbol]')
+}
+
 
 export function isArray(value) {
   if (typeof Array.isArray === "function") {
     return Array.isArray(value);
   } else {
-    return type.call(value) === "[object Array]";
+    return toString.call(value) === "[object Array]";
   }
 }
 export function isObject(value) {
-  return type.call(value) === "[object Object]";
+  return toString.call(value) === "[object Object]";
 }
 
 export function isNumber(value) {
@@ -37,7 +60,7 @@ export function isNull(value) {
   return value === null;
 }
 
-export function isUndef(value) {
+export function isUndefined(value) {
   return value === undefined
 }
 
@@ -50,7 +73,7 @@ export function isEmpty(value) {
     return Object.keys(value).length === 0;
   }
 
-  return value === "" || isUndef(value) || isNull(value);
+  return value === "" || isUndefined(value) || isNull(value);
 }
 
 export function clone(obj) {
@@ -241,3 +264,4 @@ export function toHump(name) {
 export function toLine(name) {
   return name.replace(/([A-Z])/g, "-$1").toLowerCase();
 }
+
