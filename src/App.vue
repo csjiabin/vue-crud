@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <v-crud border>
+    <v-crud border @load="onLoad">
       hello word
       <!-- <div>
         <el-button type="primary" @click="openContextMenu">
@@ -20,7 +20,7 @@
       >
         dialog
       </v-dialog>
-      <v-table v-bind="table"> </v-table>
+      <v-table v-bind="table" />
     </v-crud>
   </div>
 </template>
@@ -37,10 +37,11 @@ export default {
           border: true,
         },
         on: {},
-        data: [{ id: 1, a: [{ b: { c: 3 } }] }],
+        align: "center",
+        data: [{ id: 1, a: [{ b: { c: 3 } }] }, { id: 2 }],
         columns: [
           { type: "selection" },
-          { type: "index" },
+          { label: "序号", type: "index", minWidth: 120 },
           {
             label: "column 1",
             prop: "column1",
@@ -149,7 +150,23 @@ export default {
       done();
     },
     tableEvent() {
-      console.log(this.$refs.table);
+      this.$refs.table.clearSelection();
+    },
+    onLoad(ctx) {
+      let service = {
+        page: () => {
+          return new Promise((reslove) => {
+            setTimeout(() => {
+              reslove([{ id: 2 }]);
+            }, 1000);
+          });
+        },
+      };
+      ctx
+        .service(service)
+
+        .done();
+      ctx.refresh({ a: `1` });
     },
   },
 };

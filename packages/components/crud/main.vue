@@ -5,8 +5,8 @@
 </template>
 <script>
 import { Emitter } from "vue-crud/mixins";
-import { deepMerge } from "vue-crud/utils";
-
+import { deepMerge, isArray, isString, isObject } from "vue-crud/utils";
+import bootstrap from "vue-crud/bootstrap";
 export default {
   name: "v-crud",
   mixins: [Emitter],
@@ -104,19 +104,110 @@ export default {
     // console.log(options);
     // 合并全局配置
     deepMerge(this, options);
-    this.$on("table.selection-change", this.tableSelectionChange);
-    this.$once("hook:beforeDestroy", () => {
-      this.$off("table.selection-change", this.tableSelectionChange);
-    });
   },
-  mounted() {},
+  mounted() {
+    const res = bootstrap(this);
+    // Loaded
+    this.$emit("load", res);
+  },
   methods: {
-    tableSelectionChange({ selection }) {
-      this.selection = selection;
+    // 刷新请求
+    refresh(query = {}) {
+      // 设置参数
+      let params = this.paramsReplace({ ...this.params, ...query });
+      // Loading
+      this.loading = true;
+
+      const next = this.handleNext;
+      const done = this.handleDone;
+      const render = this.handleRender;
+
+      if (this.onRefresh) {
+        return this.onRefresh(params, { next, done, render });
+      } else {
+        return next(params);
+      }
     },
-    // 重新渲染布局
-    doLayout() {
-      this.broadcast("v-table", "resize");
+    // 完成渲染
+    done() {
+      this.test.process = true;
+    },
+    // 刷新完成事件
+    handleDone() {
+      this.loading = false;
+    },
+    // 渲染
+    handleRender(list, pagination) {
+      this.broadcast("v-table", "crud.refresh", { list });
+      this.broadcast("v-pagination", "crud.refresh", pagination);
+      this.done();
+    },
+    // 请求执行
+    handleNext(params) {
+      // 预防脏数据
+      let rd = (this.test.refreshRd = Math.random());
+      const done = this.handleDone;
+      const render = this.handleRender;
+
+      return new Promise((resolve, reject) => {
+        const reqName = this.dict.api.page;
+        let func = this.service[reqName];
+        if (!func) {
+          done();
+          return reject(`Request function '${reqName}' is not fount`);
+        }
+        func(params)
+          .then((res) => {
+            if (rd != this.test.refreshRd) {
+              return false;
+            }
+
+            if (isString(res)) {
+              return reject("Response error");
+            }
+
+            if (isArray(res)) {
+              render(res);
+            } else if (isObject(res)) {
+              render(res.list, res.pagination);
+            }
+            resolve(res);
+          })
+          .catch((err) => {
+            this.$message.error(err);
+            reject(err);
+          })
+          .finally(() => {
+            done();
+            this.test.sortLock = true;
+          });
+      });
+    },
+    // 替换参数值
+    paramsReplace(params) {
+      const { pagination, search, sort } = this.dict;
+      let a = { ...params };
+      let b = { ...pagination, ...search, ...sort };
+
+      for (let i in b) {
+        if (a.hasOwnProperty(i)) {
+          if (i != b[i]) {
+            a[`_${b[i]}`] = a[i];
+
+            delete a[i];
+          }
+        }
+      }
+
+      for (let i in a) {
+        if (i[0] === "_") {
+          a[i.substr(1)] = a[i];
+
+          delete a[i];
+        }
+      }
+
+      return a;
     },
   },
 };
@@ -131,7 +222,6 @@ export default {
   box-sizing: border-box;
   background-color: #fff;
   overflow: hidden;
-
   &.is-border {
     border: 1px solid #eee;
   }

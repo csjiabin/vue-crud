@@ -10,8 +10,8 @@
   </div>
 </template>
 <script lang="jsx">
-import { Emitter, Screen } from "vue-crud/mixins";
 import { resize } from "vue-crud/directives";
+import { Emitter, Screen } from "vue-crud/mixins";
 import { isString, isFunction, isEmpty, get } from "vue-crud/utils";
 
 import Vnodes from "../vnodes";
@@ -124,7 +124,8 @@ export default {
   },
   mounted() {
     this.calcMaxHeight();
-    console.log(this.on);
+    this.bindMethods();
+    // this.bindEmits();
   },
   methods: {
     // 计算表格最大高度
@@ -155,7 +156,7 @@ export default {
             }
           }
 
-          let h1 = Number(String(height).replace("px", ""));
+          let h1 = Number(height?.replace?.("px", ""));
           let h2 = el.clientHeight - h;
 
           this.maxHeight = h1 > h2 ? h1 : h2;
@@ -197,7 +198,8 @@ export default {
               ...item,
             },
           };
-          if (column.type !== "selection") {
+          // 数据列
+          if (!item.type || item.type === "expand") {
             column.scopedSlots = {
               default: (scope) => {
                 // 自定义插槽渲染
@@ -235,8 +237,8 @@ export default {
               },
             };
           }
-          if (column.type == "index") {
-            column.index = (i) => {
+          if (item.type == "index") {
+            column.props.index = (i) => {
               return table.indexMethod
                 ? table.indexMethod(i, this.crud)
                 : i + 1;
@@ -245,8 +247,9 @@ export default {
           const children = item.children
             ? this.renderColumns(item.children, key)
             : null;
+
           return (
-            <el-table-column key={key} {...column}>
+            <el-table-column key={"col-" + key} {...column}>
               {children}
             </el-table-column>
           );
@@ -258,6 +261,51 @@ export default {
       if (isFunction(table.empty)) {
         return table.empty(this.$createElement);
       }
+    },
+    // 绑定 el-table 事件
+    bindMethods() {
+      const methods = [
+        "clearSelection",
+        "toggleRowSelection",
+        "toggleAllSelection",
+        "toggleRowExpansion",
+        "setCurrentRow",
+        "clearSort",
+        "clearFilter",
+        "doLayout",
+        "sort",
+      ];
+
+      methods.forEach((n) => {
+        this[n] = this.$refs["table"][n];
+      });
+    },
+    // 绑定 el-table 回调
+    bindEmits() {
+      const emits = [
+        "select",
+        "select-all",
+        "selection-change",
+        "cell-mouse-enter",
+        "cell-mouse-leave",
+        "cell-click",
+        "cell-dblclick",
+        "row-click",
+        "row-contextmenu",
+        "row-dblclick",
+        "header-click",
+        "header-contextmenu",
+        "filter-change",
+        "current-change",
+        "header-dragend",
+        "expand-change",
+      ];
+
+      emits.forEach((name) => {
+        this.emit[name] = (...args) => {
+          this.$emit(name, ...args);
+        };
+      });
     },
   },
 };
