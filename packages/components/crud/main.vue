@@ -1,11 +1,21 @@
 <template>
-  <div :class="['v-crud', { 'is-border': border }]" v-on="$listeners">
+  <div
+    :class="['v-crud', { 'is-border': border }]"
+    :style="{ padding: padding + 'px' }"
+    v-on="$listeners"
+  >
     <slot />
   </div>
 </template>
 <script>
 import { Emitter } from "vue-crud/mixins";
-import { deepMerge, isArray, isString, isObject } from "vue-crud/utils";
+import {
+  deepMerge,
+  isArray,
+  isString,
+  isObject,
+  isFunction,
+} from "vue-crud/utils";
 import bootstrap from "vue-crud/bootstrap";
 export default {
   name: "v-crud",
@@ -13,6 +23,10 @@ export default {
   props: {
     // 是否带有边框
     border: Boolean,
+    padding: {
+      type: Number,
+      default: 10,
+    },
     // 删除钩子 { selection, { next } }
     onDelete: Function,
     // 刷新钩子 { params, { next, done, render } }
@@ -25,8 +39,13 @@ export default {
   },
   data() {
     return {
+      key: Date.now(),
       service: null,
       loading: false,
+      response: {
+        list: [],
+        pagination: {},
+      },
       selection: [],
       test: {
         refreshRd: null,
@@ -106,9 +125,12 @@ export default {
     deepMerge(this, options);
   },
   mounted() {
-    const res = bootstrap(this);
+    const ctx = bootstrap(this);
     // Loaded
-    this.$emit("load", res);
+    this.$emit("load", ctx);
+
+    // 绑定自定义事件
+    this.bindEvent(ctx);
   },
   methods: {
     // 刷新请求
@@ -137,7 +159,11 @@ export default {
       this.loading = false;
     },
     // 渲染
-    handleRender(list, pagination) {
+    handleRender(list, pagination = {}) {
+      this.response = {
+        list,
+        pagination,
+      };
       this.broadcast("v-table", "crud.refresh", { list });
       this.broadcast("v-pagination", "crud.refresh", pagination);
       this.done();
@@ -209,6 +235,34 @@ export default {
 
       return a;
     },
+    // 绑定自定义事件
+    bindEvent(res) {
+      const { options, inst } = this.$crud;
+      for (let k in options.events) {
+        let event = options.events[k];
+        let mode = null;
+        let callback = null;
+
+        if (isObject(event)) {
+          mode = event.mode;
+          callback = event.callback;
+        } else {
+          mode = "on";
+          callback = event;
+        }
+
+        if (!["on", "once"].includes(mode)) {
+          return console.error(k, "mode must be (on / once)");
+        }
+
+        if (!isFunction(callback)) {
+          return console.error(k, "callback is not a function");
+        }
+        inst[`$${mode}`](k, (data) => {
+          callback(data, res);
+        });
+      }
+    },
   },
 };
 </script>
@@ -218,7 +272,6 @@ export default {
   // flex-direction: column;
   height: 100%;
   position: relative;
-  padding: 10px;
   box-sizing: border-box;
   background-color: #fff;
   overflow: hidden;

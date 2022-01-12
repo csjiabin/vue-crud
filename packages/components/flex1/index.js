@@ -1,6 +1,6 @@
 
 import Flex1 from "./main.vue";
-Flex1.install = (Vue) => {
-  Vue.component(Flex1.name, Flex1);
-};
+Flex1.install = function (Vue) {
+  Vue.component(this.name, this);
+}
 export default Flex1;

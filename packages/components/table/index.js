@@ -1,6 +1,6 @@
 
 import Table from "./main.vue";
-Table.install = (Vue) => {
-  Vue.component(Table.name, Table);
-};
+Table.install = function (Vue) {
+  Vue.component(this.name, this);
+}
 export default Table;

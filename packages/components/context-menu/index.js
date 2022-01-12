@@ -5,8 +5,8 @@ import { contextMenu } from "vue-crud/directives";
 const instance = getInstance(ContextMenu);
 instance.$mount();
 document.body.appendChild(instance.$el);
-ContextMenu.install = (Vue) => {
-  Vue.component(ContextMenu.name, ContextMenu);
+ContextMenu.install = function (Vue) {
+  Vue.component(this.name, this);
   if (!Vue.prototype.$crud) {
     Vue.prototype.$crud = {};
   }

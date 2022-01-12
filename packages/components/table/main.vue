@@ -1,12 +1,27 @@
 <template>
-  <div v-resize="calcMaxHeight">
+  <div v-resize="calcMaxHeight" class="v-table">
+    <!--分页 -->
+    <div
+      class="v-table__pager"
+      v-if="pagination && pagination.position == 'top'"
+    >
+      <v-pagination v-bind="pagerProps" />
+    </div>
+    <!--表格 -->
     <el-table ref="table" v-bind="tableProps" v-on="listeners">
-      <vnodes :vnodes="renderColumns(columns)" />
+      <v-vnodes :vnodes="renderColumns(columns)" />
       <slot slot="append" name="append" />
       <slot slot="empty" name="empty">
-        <vnodes v-if="!emptyText" :vnodes="renderEmpty()" />
+        <v-vnodes v-if="!emptyText" :vnodes="renderEmpty()" />
       </slot>
     </el-table>
+    <!--分页 -->
+    <div
+      class="v-table__pager"
+      v-if="pagination && pagination.position == 'bottom'"
+    >
+      <v-pagination v-bind="pagerProps" />
+    </div>
   </div>
 </template>
 <script lang="jsx">
@@ -14,8 +29,8 @@ import { resize } from "vue-crud/directives";
 import { Emitter, Screen } from "vue-crud/mixins";
 import { isString, isFunction, isEmpty, get } from "vue-crud/utils";
 
-import Vnodes from "../vnodes";
-
+import VVnodes from "../vnodes";
+import VPagination from "../pagination";
 export default {
   name: "v-table",
   mixins: [Emitter, Screen],
@@ -24,7 +39,8 @@ export default {
   },
   inject: ["crud"],
   components: {
-    Vnodes,
+    VVnodes,
+    VPagination,
   },
   props: {
     data: {
@@ -49,6 +65,11 @@ export default {
       type: Boolean,
       default: true,
     },
+    // 撑开高度
+    fullHeight: {
+      type: Boolean,
+      default: false,
+    },
     // 开启右键菜单
     contextMenu: [Boolean, Array],
     align: String,
@@ -57,35 +78,46 @@ export default {
       type: Boolean,
       default: true,
     },
+
+    // 分页器，参考配置项或 pagination 文档，空默认不展示 {props, on}
     pagination: {
       type: Object,
-      default: () => ({}),
     },
   },
 
   data() {
     return {
+      height: null,
       maxHeight: null,
       list: this.data,
       emit: {},
     };
   },
   computed: {
+    response() {
+      return this.crud.response;
+    },
     emptyText() {
       return this.props["empty-text"] || this.props["emptyText"];
     },
     tableProps() {
       const { table = {} } = this.crud || {};
-      let emptyText = "";
+      let props = {
+        maxHeight: this.maxHeight + "px",
+        ...this.props,
+        emptyText: "",
+      };
       if (isString(table.empty)) {
-        emptyText = table.empty;
+        props.emptyText = table.empty;
       }
       if (this.emptyText) {
-        emptyText = this.emptyText;
+        props.emptyText = this.emptyText;
+      }
+      if (this.fullHeight) {
+        props.height = this.maxHeight + "px";
       }
       return {
-        ...this.props,
-        emptyText,
+        ...props,
         data: this.list,
       };
     },
@@ -99,11 +131,25 @@ export default {
       const { table = {} } = this.crud || {};
       return this.align || table.align;
     },
+    pagerProps() {
+      const { on = {}, props = {} } = this.pagination;
+      return {
+        on,
+        props,
+      };
+    },
   },
   watch: {
     data: {
       deep: true,
       handler(v) {
+        this.list = v;
+      },
+    },
+    "response.list": {
+      deep: true,
+      handler(v) {
+        if (!v) return;
         this.list = v;
       },
     },
@@ -116,51 +162,39 @@ export default {
       params.order = order === "descending" ? "desc" : "asc";
       params.prop = prop;
     }
-
-    // 事件监听
-    this.$on("crud.refresh", ({ list }) => {
-      this.list = list;
-    });
   },
   mounted() {
     this.calcMaxHeight();
     this.bindMethods();
-    // this.bindEmits();
   },
   methods: {
     // 计算表格最大高度
     calcMaxHeight() {
-      if (!this.autoHeight) return;
+      if (!this.autoHeight && !this.fullHeight) return;
       this.$nextTick(() => {
-        const el = this.crud?.$el?.parentNode;
+        const el = this.crud?.$el;
         let { height = "" } = this.props || {};
-
-        if (el) {
-          let rows = el.querySelectorAll(".cl-crud .el-row");
-
-          if (!rows[0] || !rows[0].isConnected) return;
-
-          let h = 25;
-
+        const { padding } = this.crud;
+        if (!el) return;
+        let h2 = el.clientHeight - (padding ?? 0) * 2;
+        let rows = el.querySelectorAll(".el-row");
+        let pagers = el.querySelectorAll(".v-table__pager");
+        if (rows.length) {
+          let h = 0;
           for (let i = 0; i < rows.length; i++) {
-            let f = true;
-
-            for (let j = 0; j < rows[i].childNodes.length; j++) {
-              if (rows[i].childNodes[j].className == "cl-table") {
-                f = false;
-              }
-            }
-
-            if (f) {
-              h += rows[i].clientHeight + 5;
-            }
+            h += rows[i].clientHeight;
           }
-
-          let h1 = Number(height?.replace?.("px", ""));
-          let h2 = el.clientHeight - h;
-
-          this.maxHeight = h1 > h2 ? h1 : h2;
+          h2 -= h;
         }
+        if (pagers.length) {
+          let h = 0;
+          for (let i = 0; i < rows.length; i++) {
+            h += pagers[i].clientHeight;
+          }
+          h2 -= h;
+        }
+        let h1 = Number(height?.replace?.("px", ""));
+        this.maxHeight = h1 > h2 ? h1 : h2;
       });
     },
     // 监听排序
@@ -182,8 +216,7 @@ export default {
           });
         }
       }
-      let sortChange = this.on["sort-change"];
-      sortChange && sortChange({ column, prop, order });
+      this.on["sort-change"]?.({ column, prop, order });
     },
     // column处理
     renderColumns(columns = [], pKey = 0) {
@@ -310,3 +343,11 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.v-table {
+  box-sizing: border-box;
+  &__pager {
+    padding: 5px 0;
+  }
+}
+</style>

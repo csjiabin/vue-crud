@@ -1,11 +1,12 @@
 import components from "./components";
 const install = function (Vue, options = {}) {
+  const inst = new Vue()
   // 缓存配置
   Vue.prototype.$crud = {
     options,
     vue: Vue,
-    inst: new Vue(),
-    components
+    inst,
+    emit: inst.$emit,
   }
   // 缓存配置
   // 注册组件
@@ -17,6 +18,7 @@ const install = function (Vue, options = {}) {
 if (typeof window !== "undefined" && window.Vue) {
   install(window.Vue);
 }
+
 export default {
   version: '__VERSION__',
   install,

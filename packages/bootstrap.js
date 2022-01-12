@@ -17,17 +17,14 @@ export default (self) => {
 
   ctx.conf = (d) => {
     deepMerge(conf, d);
-
     return ctx;
   };
 
   ctx.service = (d) => {
     self.service = d;
-
     if (fn.permission) {
       self.permission = fn.permission(self);
     }
-
     return ctx;
   };
 
@@ -37,13 +34,11 @@ export default (self) => {
     } else {
       deepMerge(self.permission, x);
     }
-
     return ctx;
   };
 
   ctx.set = (key, value) => {
     deepMerge(self[key], value);
-
     return ctx;
   };
 
@@ -53,7 +48,6 @@ export default (self) => {
         mode: n,
         callback: cb
       };
-
       return ctx;
     };
   });
@@ -61,7 +55,6 @@ export default (self) => {
   ctx.done = () => {
     self.done();
     return ctx;
-
   };
 
   return ctx;

@@ -20,6 +20,11 @@ Vue.use(VueCrud, {
     page: 1,
     size: 20,
   },
+  events: {
+    refresh: (...args) => {
+      console.log('refresh',...args);
+    }
+  },
   style: {
     refreshBtn: {},
     addBtn: {},

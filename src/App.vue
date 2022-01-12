@@ -1,8 +1,9 @@
 <template>
   <div id="app">
-    <v-crud border @load="onLoad">
-      hello word
-      <!-- <div>
+    <v-crud ref="crud" border @load="onLoad">
+      <el-row>
+        hello word
+        <!-- <div>
         <el-button type="primary" @click="openContextMenu">
           context menu
         </el-button>
@@ -11,8 +12,11 @@
         <el-col :span="8">8</el-col>
         <v-flex1>flex1</v-flex1>
       </el-row> -->
-      <el-button @click="tableEvent">table</el-button>
-      <el-button @click="visible = true">button</el-button>
+        <el-button @click="tableEvent">table</el-button>
+        <el-button @click="visible = true" v-contextmenu="contextMenu"
+          >button</el-button
+        >
+      </el-row>
       <v-dialog
         :visible.sync="visible"
         width="500px"
@@ -31,10 +35,14 @@ export default {
   data() {
     return {
       visible: false,
+      off: false,
       table: {
         ref: "table",
         props: {
           border: true,
+        },
+        pagination: {
+          position: "bottom",
         },
         on: {},
         align: "center",
@@ -150,15 +158,21 @@ export default {
       done();
     },
     tableEvent() {
-      this.$refs.table.clearSelection();
+      // this.$refs.table.clearSelection();
+      this.off = !this.off;
+      this.$refs.crud.refresh();
     },
     onLoad(ctx) {
       let service = {
-        page: () => {
+        page: (query) => {
           return new Promise((reslove) => {
+            console.log(query);
             setTimeout(() => {
-              reslove([{ id: 2 }]);
-            }, 1000);
+              reslove({
+                list: [{ id: Date.now(), ...query }],
+                pagination: { page: 1, total: 100 },
+              });
+            }, 300);
           });
         },
       };
