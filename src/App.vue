@@ -170,16 +170,13 @@ export default {
             setTimeout(() => {
               reslove({
                 list: [{ id: Date.now(), ...query }],
-                pagination: { page: 1, total: 100 },
+                pagination: { total: 100, ...query },
               });
             }, 300);
           });
         },
       };
-      ctx
-        .service(service)
-
-        .done();
+      ctx.service(service).done();
       ctx.refresh({ a: `1` });
     },
   },

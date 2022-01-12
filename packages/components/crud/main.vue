@@ -39,7 +39,6 @@ export default {
   },
   data() {
     return {
-      key: Date.now(),
       service: null,
       loading: false,
       response: {
@@ -164,7 +163,8 @@ export default {
         list,
         pagination,
       };
-      this.broadcast("v-table", "crud.refresh", { list });
+      console.log("pagination", pagination);
+      this.broadcast("v-table", "crud.refresh", list);
       this.broadcast("v-pagination", "crud.refresh", pagination);
       this.done();
     },

@@ -26,11 +26,14 @@ export default {
       return this.crud.response;
     },
     pagerProps() {
+      const { disabled } = this.props;
+      const { loading } = this.crud;
       return {
         background: true,
         total: this.total,
         layout: "total, sizes, prev, pager, next, jumper",
         ...this.props,
+        disabled: disabled || loading,
       };
     },
     pagerEvents() {
