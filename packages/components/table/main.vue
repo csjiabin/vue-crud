@@ -78,7 +78,6 @@ export default {
       type: Boolean,
       default: true,
     },
-
     // 分页器，参考配置项或 pagination 文档，空默认不展示 {props, on}
     pagination: {
       type: Object,
