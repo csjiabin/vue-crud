@@ -163,8 +163,7 @@ export default {
         list,
         pagination,
       };
-      console.log("pagination", pagination);
-      this.broadcast("v-table", "crud.refresh", list);
+      this.broadcast("v-table", "crud.refresh", { list });
       this.broadcast("v-pagination", "crud.refresh", pagination);
       this.done();
     },

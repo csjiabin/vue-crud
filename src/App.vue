@@ -1,9 +1,18 @@
 <template>
   <div id="app">
     <v-crud ref="crud" border @load="onLoad">
-      <el-row>
-        hello word
-        <!-- <div>
+      <v-dialog
+        :visible.sync="visible"
+        width="500px"
+        :props="{ beforeClose: beforeClose }"
+      >
+        dialog
+      </v-dialog>
+      <v-table v-bind="table">
+        <template #header>
+          <div>
+            hello word
+            <!-- <div>
         <el-button type="primary" @click="openContextMenu">
           context menu
         </el-button>
@@ -12,19 +21,21 @@
         <el-col :span="8">8</el-col>
         <v-flex1>flex1</v-flex1>
       </el-row> -->
-        <el-button @click="tableEvent">table</el-button>
-        <el-button @click="visible = true" v-contextmenu="contextMenu"
-          >button</el-button
-        >
-      </el-row>
-      <v-dialog
-        :visible.sync="visible"
-        width="500px"
-        :props="{ beforeClose: beforeClose }"
-      >
-        dialog
-      </v-dialog>
-      <v-table v-bind="table" />
+            <el-button @click="tableEvent">table</el-button>
+            <el-button @click="visible = true" v-contextmenu="contextMenu"
+              >button</el-button
+            >
+            <v-filter-group v-model="search">
+              <v-filter label="关键字">
+                <el-input v-model="search.keyword" />
+              </v-filter>
+            </v-filter-group>
+          </div>
+        </template>
+        <template #footer>
+          <div>footer</div>
+        </template>
+      </v-table>
     </v-crud>
   </div>
 </template>
@@ -36,6 +47,9 @@ export default {
     return {
       visible: false,
       off: false,
+      search: {
+        keyword: "",
+      },
       table: {
         ref: "table",
         props: {
@@ -177,7 +191,7 @@ export default {
         },
       };
       ctx.service(service).done();
-      ctx.refresh({ a: `1` });
+      ctx.refresh(this.search);
     },
   },
 };

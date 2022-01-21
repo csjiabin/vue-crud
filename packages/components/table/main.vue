@@ -1,5 +1,8 @@
 <template>
   <div v-resize="calcMaxHeight" class="v-table">
+    <div class="v-table__header" v-if="$slots.header">
+      <slot name="header" />
+    </div>
     <!--分页 -->
     <div
       class="v-table__pager"
@@ -22,6 +25,9 @@
     >
       <v-pagination v-bind="pagerProps" />
     </div>
+    <div class="v-table__footer" v-if="$slots.footer">
+      <slot name="footer" />
+    </div>
   </div>
 </template>
 <script lang="jsx">
@@ -43,10 +49,6 @@ export default {
     VPagination,
   },
   props: {
-    data: {
-      type: Array,
-      default: () => [],
-    },
     columns: {
       type: Array,
       required: true,
@@ -88,7 +90,7 @@ export default {
     return {
       height: null,
       maxHeight: null,
-      list: this.data,
+      list: [],
       emit: {},
     };
   },
@@ -116,8 +118,8 @@ export default {
         props.height = this.maxHeight + "px";
       }
       return {
-        ...props,
         data: this.list,
+        ...props,
       };
     },
     listeners() {
@@ -138,21 +140,15 @@ export default {
       };
     },
   },
-  watch: {
-    data: {
-      deep: true,
-      handler(v) {
-        this.list = v;
-      },
-    },
-    "response.list": {
-      deep: true,
-      handler(v) {
-        if (!v) return;
-        this.list = v;
-      },
-    },
-  },
+  // watch: {
+  // "response.list": {
+  //   deep: true,
+  //   handler(v) {
+  //     if (!v) return;
+  //     this.list = v;
+  //   },
+  // },
+  // },
   created() {
     // 获取默认排序
     const { order, prop } = this.props["default-sort"] || {};
@@ -161,12 +157,19 @@ export default {
       params.order = order === "descending" ? "desc" : "asc";
       params.prop = prop;
     }
+    this.$on("crud.refresh", this.setList);
+    this.$once("hook:beforeDestroy", () => {
+      this.$off("crud.refresh", this.setList);
+    });
   },
   mounted() {
     this.calcMaxHeight();
     this.bindMethods();
   },
   methods: {
+    setList({ list }) {
+      this.list = list;
+    },
     // 计算表格最大高度
     calcMaxHeight() {
       if (!this.autoHeight && !this.fullHeight) return;
@@ -177,7 +180,9 @@ export default {
         if (!el) return;
         let h2 = el.clientHeight - (padding ?? 0) * 2;
         let rows = el.querySelectorAll(".el-row");
-        let pagers = el.querySelectorAll(".v-table__pager");
+        let pager = el.querySelector(".v-table__pager");
+        let header = el.querySelector(".v-table__header");
+        let footer = el.querySelector(".v-table__footer");
         if (rows.length) {
           let h = 0;
           for (let i = 0; i < rows.length; i++) {
@@ -185,12 +190,17 @@ export default {
           }
           h2 -= h;
         }
-        if (pagers.length) {
-          let h = 0;
-          for (let i = 0; i < rows.length; i++) {
-            h += pagers[i].clientHeight;
-          }
-          h2 -= h;
+        if (pager) {
+          h2 -= pager.clientHeight;
+          console.log("pager", pager.clientHeight);
+        }
+        if (header) {
+          h2 -= header.clientHeight;
+          console.log("header", header.clientHeight);
+        }
+        if (footer) {
+          h2 -= footer.clientHeight;
+          console.log("footer", header.clientHeight);
         }
         let h1 = Number(height?.replace?.("px", ""));
         this.maxHeight = h1 > h2 ? h1 : h2;

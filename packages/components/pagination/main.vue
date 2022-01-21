@@ -30,10 +30,12 @@ export default {
       const { loading } = this.crud;
       return {
         background: true,
-        total: this.total,
         layout: "total, sizes, prev, pager, next, jumper",
         ...this.props,
         disabled: disabled || loading,
+        total: this.total,
+        currentPage: this.currentPage,
+        pageSize: this.pageSize,
       };
     },
     pagerEvents() {
@@ -49,19 +51,19 @@ export default {
       immediate: true,
       handler: "setPager",
     },
-    "response.pagination": {
-      immediate: true,
-      handler(v) {
-        if (!v) return;
-        this.setPager(v);
-      },
-    },
+    // "response.pagination": {
+    //   immediate: true,
+    //   handler(v) {
+    //     if (!v) return;
+    //     this.setPager(v);
+    //   },
+    // },
   },
   created() {
-    // this.$on("crud.refresh", this.setPager);
-    // this.$once("hook:beforeDestroy", () => {
-    //   this.$off("crud.refresh", this.setPager);
-    // });
+    this.$on("crud.refresh", this.setPager);
+    this.$once("hook:beforeDestroy", () => {
+      this.$off("crud.refresh", this.setPager);
+    });
   },
   methods: {
     setPager(res) {
@@ -70,6 +72,7 @@ export default {
       this.pageSize = res.pageSize || res.size || 20;
       this.total = res.total | 0;
       this.crud.params.size = this.pageSize;
+      this.crud.params.page = this.currentPage;
     },
     currentChange(page) {
       this.currentPage = page;
