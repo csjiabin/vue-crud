@@ -89,7 +89,6 @@ export default {
   data() {
     return {
       height: null,
-      maxHeight: null,
       list: [],
       emit: {},
     };
@@ -104,8 +103,6 @@ export default {
     tableProps() {
       const { table = {} } = this.crud || {};
       let props = {
-        maxHeight: this.maxHeight + "px",
-        ...this.props,
         emptyText: "",
       };
       if (isString(table.empty)) {
@@ -114,11 +111,15 @@ export default {
       if (this.emptyText) {
         props.emptyText = this.emptyText;
       }
+      if (this.autoHeight) {
+        props.maxHeight = this.height + "px";
+      }
       if (this.fullHeight) {
-        props.height = this.maxHeight + "px";
+        props.height = this.height + "px";
       }
       return {
         data: this.list,
+        ...this.props,
         ...props,
       };
     },
@@ -203,7 +204,7 @@ export default {
           console.log("footer", header.clientHeight);
         }
         let h1 = Number(height?.replace?.("px", ""));
-        this.maxHeight = h1 > h2 ? h1 : h2;
+        this.height = h1 > h2 ? h1 : h2;
       });
     },
     // 监听排序

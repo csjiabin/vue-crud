@@ -1,30 +1,14 @@
 <template>
   <div id="app">
     <v-crud ref="crud" border @load="onLoad">
-      <v-dialog
-        :visible.sync="visible"
-        width="500px"
-        :props="{ beforeClose: beforeClose }"
-      >
-        dialog
-      </v-dialog>
+      <v-dialog :visible.sync="visible" width="500px"> dialog </v-dialog>
       <v-table v-bind="table">
         <template #header>
           <div>
             hello word
-            <!-- <div>
-        <el-button type="primary" @click="openContextMenu">
-          context menu
-        </el-button>
-      </div>
-      <el-row type="flex">
-        <el-col :span="8">8</el-col>
-        <v-flex1>flex1</v-flex1>
-      </el-row> -->
             <v-refresh-btn />
-            <el-button @click="tableEvent">table</el-button>
             <el-button @click="visible = true" v-contextmenu="contextMenu"
-              >button</el-button
+              >dialog</el-button
             >
             <v-filter-group v-model="search">
               <v-filter label="关键字">
@@ -167,15 +151,6 @@ export default {
       this.$crud.openContextMenu(event, {
         list: this.contextMenu,
       });
-    },
-    beforeClose(done) {
-      console.log("beforeClose");
-      done();
-    },
-    tableEvent() {
-      // this.$refs.table.clearSelection();
-      this.off = !this.off;
-      this.$refs.crud.refresh();
     },
     onLoad(ctx) {
       let service = {
