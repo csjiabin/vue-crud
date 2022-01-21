@@ -37,6 +37,7 @@ import { isString, isFunction, isEmpty, get } from "vue-crud/utils";
 
 import VVnodes from "../vnodes";
 import VPagination from "../pagination";
+
 export default {
   name: "v-table",
   mixins: [Emitter, Screen],
@@ -127,6 +128,7 @@ export default {
       return {
         ...this.on,
         "sort-change": this.handleSortChange,
+        "row-contextmenu": this.handleRowContextmenu,
       };
     },
     _align() {
@@ -227,6 +229,71 @@ export default {
         }
       }
       this.on["sort-change"]?.({ column, prop, order });
+    },
+    // 右键菜单
+    handleRowContextmenu(row, column, event) {
+      const {
+        refresh,
+        rowEdit,
+        rowDelete,
+        getPermission,
+        selection,
+        table = {},
+      } = this.crud;
+      let btns = [
+        "refresh",
+        "check",
+        "edit",
+        "delete",
+        "order-asc",
+        "order-desc",
+      ];
+      this.on["row-contextmenu"]?.(row, column, event);
+
+      // 配置
+      const cm =
+        isEmpty(this.contextMenu) && !isArray(this.contextMenu)
+          ? table["context-menu"]
+          : this.contextMenu;
+      if (cm && isArray(cm)) {
+        btns = cm || [];
+      }
+      let enable = btns.length > 0;
+      if (!enable) return;
+      // 右键菜单处理
+      let list = btns.map((v) => {
+        if (v == "refresh") {
+          return {
+            label: "刷新",
+            callback: (_, done) => {
+              refresh();
+              done();
+            },
+          };
+        }
+        if (v == "edit") {
+          return {
+            label: "编辑",
+            hidden: !getPermission("update"),
+            callback: (_, done) => {
+              rowEdit(row);
+              done();
+            },
+          };
+        }
+        if (v == "delete") {
+          return {
+            label: "删除",
+            hidden: !getPermission("delete"),
+            callback: (_, done) => {
+              rowDelete(row);
+              done();
+            },
+          };
+        }
+        if (v == "check") {
+        }
+      });
     },
     // column处理
     renderColumns(columns = [], pKey = 0) {
