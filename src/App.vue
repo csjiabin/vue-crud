@@ -21,6 +21,7 @@
         <el-col :span="8">8</el-col>
         <v-flex1>flex1</v-flex1>
       </el-row> -->
+            <v-refresh-btn />
             <el-button @click="tableEvent">table</el-button>
             <el-button @click="visible = true" v-contextmenu="contextMenu"
               >button</el-button

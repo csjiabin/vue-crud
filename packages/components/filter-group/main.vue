@@ -7,12 +7,12 @@
           type="primary"
           icon="el-icon-search"
           v-bind="crud.style.filterSearchBtn"
-          :loading="loading"
+          :loading="crud.loading"
           @click="search"
         >
           搜索
         </el-button>
-        <el-button :disabled="loading" @click="reset">重置</el-button>
+        <el-button :disabled="crud.loading" @click="reset">重置</el-button>
       </slot>
     </div>
   </div>
@@ -36,7 +36,6 @@ export default {
     return {
       oForm: cloneDeep(this.value),
       form: {},
-      loading: false,
     };
   },
   watch: {
@@ -50,17 +49,11 @@ export default {
   },
   methods: {
     handleNext(params) {
-      this.loading = true;
-
-      this.crud
-        .refresh({
-          ...this.form,
-          page: 1,
-          ...params,
-        })
-        .finally(() => {
-          this.loading = false;
-        });
+      this.crud.refresh({
+        ...this.form,
+        page: 1,
+        ...params,
+      });
     },
     // 搜索
     search() {
