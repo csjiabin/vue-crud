@@ -40,20 +40,16 @@ export default {
         ref: "table",
         props: {
           border: true,
+          rowKey: (row) => {
+            return row.id;
+          },
         },
         pagination: {
           position: "bottom",
         },
         on: {},
         align: "left",
-        contextMenu: [
-          "refresh",
-          "check",
-          "update",
-          "delete",
-          "order-asc",
-          "order-desc",
-        ],
+        contextMenu: ["refresh", "update", "delete", "order-asc", "order-desc"],
         data: [{ id: 1, a: [{ b: { c: 3 } }] }, { id: 2 }],
         columns: [
           { type: "selection" },

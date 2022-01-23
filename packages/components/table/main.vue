@@ -249,19 +249,10 @@ export default {
         rowEdit,
         rowDelete,
         getPermission,
-        selection,
         table = {},
       } = this.crud;
-      let btns = [
-        "refresh",
-        "check",
-        "update",
-        "delete",
-        "order-asc",
-        "order-desc",
-      ];
+      let btns = ["refresh", "update", "delete", "order-asc", "order-desc"];
       this.on["row-contextmenu"]?.(row, column, event);
-
       // 配置
       const cm =
         isEmpty(this.contextMenu) && !isArray(this.contextMenu)
@@ -304,9 +295,6 @@ export default {
               },
             };
           }
-          if (v == "check") {
-            return;
-          }
           if (v == "order-desc") {
             return {
               label: `${column.label} - 降序`,
@@ -333,7 +321,6 @@ export default {
           return v;
         })
         .filter((e) => !!e && !e.hidden);
-      console.log(list);
       // 打开右键菜单
       if (!isEmpty(list)) {
         this.$crud.openContextMenu(event, {
