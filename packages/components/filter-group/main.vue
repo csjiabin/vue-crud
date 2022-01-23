@@ -48,17 +48,16 @@ export default {
     },
   },
   methods: {
-    handleNext(params) {
-      this.crud.refresh({
-        ...this.form,
-        page: 1,
-        ...params,
-      });
-    },
     // 搜索
     search() {
       this.$emit("input", this.form);
-      const next = this.handleNext;
+      const next = (params) => {
+        this.crud.refresh({
+          ...this.form,
+          page: 1,
+          ...params,
+        });
+      };
       if (this.onSearch) {
         this.onSearch(this.form, { next });
       } else {

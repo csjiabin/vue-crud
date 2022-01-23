@@ -78,7 +78,7 @@ export default {
           size: "size",
         },
         search: {
-          keyWord: "keyWord",
+          keyword: "keyword",
           query: "query",
         },
         sort: {
@@ -139,9 +139,60 @@ export default {
       // Loading
       this.loading = true;
 
-      const next = this.handleNext;
-      const done = this.handleDone;
-      const render = this.handleRender;
+      // 刷新完成事件
+      const done = () => {
+        this.loading = false;
+      };
+
+      // 渲染
+      const render = (list, pagination = {}) => {
+        this.response = {
+          list,
+          pagination,
+        };
+        this.broadcast("v-table", "crud.refresh", { list });
+        this.broadcast("v-pagination", "crud.refresh", pagination);
+        done();
+      };
+      // 预防脏数据
+      let rd = (this.test.refreshRd = Math.random());
+
+      // 请求执行
+      const next = (params) => {
+        return new Promise((resolve, reject) => {
+          const reqName = this.dict.api.page;
+          let func = this.service[reqName];
+          if (!func) {
+            done();
+            return reject(`Request function '${reqName}' is not fount`);
+          }
+          func(params)
+            .then((res) => {
+              if (rd != this.test.refreshRd) {
+                return false;
+              }
+
+              if (isString(res)) {
+                return reject("Response error");
+              }
+
+              if (isArray(res)) {
+                render(res);
+              } else if (isObject(res)) {
+                render(res.list, res.pagination);
+              }
+              resolve(res);
+            })
+            .catch((err) => {
+              this.$message.error(err);
+              reject(err);
+            })
+            .finally(() => {
+              done();
+              this.test.sortLock = true;
+            });
+        });
+      };
 
       if (this.onRefresh) {
         return this.onRefresh(params, { next, done, render });
@@ -153,61 +204,7 @@ export default {
     done() {
       this.test.process = true;
     },
-    // 刷新完成事件
-    handleDone() {
-      this.loading = false;
-    },
-    // 渲染
-    handleRender(list, pagination = {}) {
-      this.response = {
-        list,
-        pagination,
-      };
-      this.broadcast("v-table", "crud.refresh", { list });
-      this.broadcast("v-pagination", "crud.refresh", pagination);
-      this.done();
-    },
-    // 请求执行
-    handleNext(params) {
-      // 预防脏数据
-      let rd = (this.test.refreshRd = Math.random());
-      const done = this.handleDone;
-      const render = this.handleRender;
 
-      return new Promise((resolve, reject) => {
-        const reqName = this.dict.api.page;
-        let func = this.service[reqName];
-        if (!func) {
-          done();
-          return reject(`Request function '${reqName}' is not fount`);
-        }
-        func(params)
-          .then((res) => {
-            if (rd != this.test.refreshRd) {
-              return false;
-            }
-
-            if (isString(res)) {
-              return reject("Response error");
-            }
-
-            if (isArray(res)) {
-              render(res);
-            } else if (isObject(res)) {
-              render(res.list, res.pagination);
-            }
-            resolve(res);
-          })
-          .catch((err) => {
-            this.$message.error(err);
-            reject(err);
-          })
-          .finally(() => {
-            done();
-            this.test.sortLock = true;
-          });
-      });
-    },
     // 替换参数值
     paramsReplace(params) {
       const { pagination, search, sort } = this.dict;
@@ -260,6 +257,75 @@ export default {
         inst[`$${mode}`](k, (data) => {
           callback(data, res);
         });
+      }
+    },
+    // 获取权限
+    getPermission(key) {
+      if (!key) {
+        return this.permission;
+      }
+
+      return this.permission[key];
+    },
+    // 新增
+    rowAdd() {
+      console.log(this);
+      this.broadcast("cl-upsert", "crud.add");
+    },
+
+    // 编辑
+    rowEdit(data) {
+      this.broadcast("cl-upsert", "crud.edit", data);
+    },
+    // 追加
+    rowAppend(data) {
+      this.broadcast("cl-upsert", "crud.append", data);
+    },
+    // 关闭
+    rowClose() {
+      this.broadcast("cl-upsert", "crud.close");
+    },
+    rowDelete(...selection) {
+      // 获取请求方法
+      const reqName = this.dict.api.delete;
+
+      let params = {
+        ids: selection.map((e) => e.id),
+      };
+      // 删除事件
+      const next = (params) => {
+        return new Promise((resolve, reject) => {
+          this.$confirm(`此操作将永久删除选中数据，是否继续？`, "提示", {
+            type: "warning",
+          })
+            .then((res) => {
+              if (res === "confirm") {
+                // Validate
+                if (!this.service[reqName]) {
+                  return reject(`Request function '${reqName}' is not fount`);
+                }
+
+                // Send request
+                this.service[reqName](params)
+                  .then((res) => {
+                    this.$message.success(`删除成功`);
+                    this.refresh();
+                    resolve(res);
+                  })
+                  .catch((err) => {
+                    this.$message.error(err);
+                    reject(err);
+                  });
+              }
+            })
+            .catch(() => null);
+        });
+      };
+
+      if (this.onDelete) {
+        this.onDelete(selection, { next });
+      } else {
+        next(params);
       }
     },
   },

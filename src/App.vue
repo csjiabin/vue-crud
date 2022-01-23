@@ -6,6 +6,7 @@
         <template #header>
           <div>
             hello word
+            <v-add-btn />
             <v-refresh-btn />
             <el-button @click="visible = true" v-contextmenu="contextMenu"
               >dialog</el-button
@@ -44,7 +45,15 @@ export default {
           position: "bottom",
         },
         on: {},
-        align: "center",
+        align: "left",
+        contextMenu: [
+          "refresh",
+          "check",
+          "update",
+          "delete",
+          "order-asc",
+          "order-desc",
+        ],
         data: [{ id: 1, a: [{ b: { c: 3 } }] }, { id: 2 }],
         columns: [
           { type: "selection" },
@@ -58,7 +67,6 @@ export default {
                 label: "ID",
                 prop: "id",
                 minWidth: 100,
-                emptyText: "-",
               },
             ],
           },
@@ -72,7 +80,12 @@ export default {
                 prop: "column2-1",
                 minWidth: 100,
                 children: [
-                  { label: "column 2-1-1", prop: "column2-1-1", minWidth: 100 },
+                  {
+                    label: "column 2-1-1",
+                    prop: "column2-1-1",
+                    minWidth: 100,
+                    emptyText: "-",
+                  },
                   {
                     label: "column 2-1-2",
                     prop: "column2-1-2",
@@ -166,8 +179,7 @@ export default {
           });
         },
       };
-      ctx.service(service).done();
-      ctx.refresh(this.search);
+      ctx.service(service).done().refresh(this.search);
     },
   },
 };

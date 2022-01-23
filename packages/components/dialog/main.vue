@@ -15,7 +15,9 @@
     <template #title v-if="!hiddenHeader">
       <div class="v-dialog__header" @dblclick="changeFullscreen()">
         <!-- 标题  -->
-        <span class="v-dialog__title">{{ title }}</span>
+        <div class="v-dialog__title">
+          <slot name="title">{{ title }}</slot>
+        </div>
         <!-- 控制按钮 -->
         <div class="v-dialog__controls" v-if="!hiddenControls">
           <template v-for="(item, index) in controls">
@@ -74,7 +76,7 @@ export default {
     },
     title: {
       type: String,
-      default: "对话框",
+      default: "title",
     },
     // 高度
     height: String,
@@ -276,7 +278,7 @@ export default {
         }
       })();
       // Screen limit
-      const pad = 5;
+      const pad = 0;
       const minLeft = -(clientWidth - dlg.clientWidth) / 2 + pad;
       const maxLeft =
         (dlg.clientWidth >= clientWidth / 2

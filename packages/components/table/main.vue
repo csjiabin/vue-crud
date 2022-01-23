@@ -33,7 +33,7 @@
 <script lang="jsx">
 import { resize } from "vue-crud/directives";
 import { Emitter, Screen } from "vue-crud/mixins";
-import { isString, isFunction, isEmpty, get } from "vue-crud/utils";
+import { isString, isArray, isFunction, isEmpty, get } from "vue-crud/utils";
 
 import VVnodes from "../vnodes";
 import VPagination from "../pagination";
@@ -195,19 +195,31 @@ export default {
         }
         if (pager) {
           h2 -= pager.clientHeight;
-          console.log("pager", pager.clientHeight);
+          // console.log("pager", pager.clientHeight);
         }
         if (header) {
           h2 -= header.clientHeight;
-          console.log("header", header.clientHeight);
+          // console.log("header", header.clientHeight);
         }
         if (footer) {
           h2 -= footer.clientHeight;
-          console.log("footer", header.clientHeight);
+          // console.log("footer", header.clientHeight);
         }
         let h1 = Number(height?.replace?.("px", ""));
         this.height = h1 > h2 ? h1 : h2;
       });
+    },
+    // 改变排序方式
+    changeSort(prop, order) {
+      if (order === "desc") {
+        order = "descending";
+      }
+
+      if (order === "asc") {
+        order = "ascending";
+      }
+
+      this.$refs["table"].sort(prop, order);
     },
     // 监听排序
     handleSortChange({ column, prop, order }) {
@@ -243,7 +255,7 @@ export default {
       let btns = [
         "refresh",
         "check",
-        "edit",
+        "update",
         "delete",
         "order-asc",
         "order-desc",
@@ -261,39 +273,73 @@ export default {
       let enable = btns.length > 0;
       if (!enable) return;
       // 右键菜单处理
-      let list = btns.map((v) => {
-        if (v == "refresh") {
-          return {
-            label: "刷新",
-            callback: (_, done) => {
-              refresh();
-              done();
-            },
-          };
-        }
-        if (v == "edit") {
-          return {
-            label: "编辑",
-            hidden: !getPermission("update"),
-            callback: (_, done) => {
-              rowEdit(row);
-              done();
-            },
-          };
-        }
-        if (v == "delete") {
-          return {
-            label: "删除",
-            hidden: !getPermission("delete"),
-            callback: (_, done) => {
-              rowDelete(row);
-              done();
-            },
-          };
-        }
-        if (v == "check") {
-        }
-      });
+      let list = btns
+        .map((v) => {
+          if (v == "refresh") {
+            return {
+              label: "刷新",
+              callback: (_, done) => {
+                refresh();
+                done();
+              },
+            };
+          }
+          if (v == "update") {
+            return {
+              label: "编辑",
+              hidden: !getPermission("update"),
+              callback: (_, done) => {
+                rowEdit(row);
+                done();
+              },
+            };
+          }
+          if (v == "delete") {
+            return {
+              label: "删除",
+              hidden: !getPermission("delete"),
+              callback: (_, done) => {
+                rowDelete(row);
+                done();
+              },
+            };
+          }
+          if (v == "check") {
+            return;
+          }
+          if (v == "order-desc") {
+            return {
+              label: `${column.label} - 降序`,
+              hidden: !column.sortable,
+              callback: (_, done) => {
+                this.changeSort(column.property, "desc");
+                done();
+              },
+            };
+          }
+          if (v == "order-asc") {
+            return {
+              label: `${column.label} - 升序`,
+              hidden: !column.sortable,
+              callback: (_, done) => {
+                this.changeSort(column.property, "asc");
+                done();
+              },
+            };
+          }
+          if (isFunction(v)) {
+            return v(row, column, event);
+          }
+          return v;
+        })
+        .filter((e) => !!e && !e.hidden);
+      console.log(list);
+      // 打开右键菜单
+      if (!isEmpty(list)) {
+        this.$crud.openContextMenu(event, {
+          list,
+        });
+      }
     },
     // column处理
     renderColumns(columns = [], pKey = 0) {
@@ -323,7 +369,7 @@ export default {
                   return slot(newScope);
                 }
                 if (item.render) {
-                  return item.render(newScope);
+                  return item.render(newScope, this.$createElement);
                 }
                 if (item.formatter) {
                   return item.formatter(

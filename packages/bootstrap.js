@@ -11,8 +11,9 @@ export default (self) => {
 
   ctx.id = id;
 
-  ctx.refresh = (d) => {
-    return isFunction(d) ? d(self.params, refresh) : refresh(d);
+  ctx.refresh = async (d) => {
+    isFunction(d) ? await d(self.params, refresh) : await refresh(d)
+    return ctx;
   }
 
   ctx.conf = (d) => {
