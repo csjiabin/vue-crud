@@ -8,10 +8,10 @@ const install = function (Vue, options = {}) {
     inst,
     emit: inst.$emit,
   }
-  // 缓存配置
+
   // 注册组件
-  for (let i in components) {
-    Vue.use(components[i]);
+  for (let name in components) {
+    Vue.use(components[name]);
   }
 };
 //  全局引用可自动安装
@@ -22,4 +22,5 @@ if (typeof window !== "undefined" && window.Vue) {
 export default {
   version: '__VERSION__',
   install,
+  components
 };

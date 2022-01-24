@@ -5,6 +5,11 @@
       <v-table v-bind="table">
         <template #header>
           <div>
+            <v-form inner v-model="form">
+              <template #test="scope">
+                <div>name{{ scope }}</div>
+              </template>
+            </v-form>
             hello word
             <v-add-btn />
             <v-refresh-btn />
@@ -35,6 +40,9 @@ export default {
       off: false,
       search: {
         keyword: "",
+      },
+      form: {
+        name: "",
       },
       table: {
         ref: "table",

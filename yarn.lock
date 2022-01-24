@@ -2038,6 +2038,11 @@ vite-plugin-imp@^2.0.9:
     chalk "^4.1.0"
     param-case "^3.0.4"
 
+vite-plugin-replace@^0.1.1:
+  version "0.1.1"
+  resolved "https://repo.huaweicloud.com/repository/npm/vite-plugin-replace/-/vite-plugin-replace-0.1.1.tgz#d9fdd04ac98d4d2552ef9ff3d6c2768e825c8562"
+  integrity sha512-v+okl3JNt2pf1jDYijw+WPVt6h9FWa/atTi+qnSFBqmKThLTDhlesx0r3bh+oFPmxRJmis5tNx9HtN6lGFoqWg==
+
 vite-plugin-vue2@^1.8.1:
   version "1.9.0"
   resolved "https://registry.npmjs.org/vite-plugin-vue2/-/vite-plugin-vue2-1.9.0.tgz#59330699c384d4dbe6c0ded0cfb481f114e46832"

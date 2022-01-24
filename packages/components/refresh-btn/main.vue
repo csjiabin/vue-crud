@@ -12,6 +12,7 @@ export default {
       const { style, loading } = this.crud;
       return {
         type: "primary",
+        icon: "el-icon-refresh-right",
         ...style.refreshBtn,
         ...this.$attrs,
         loading,

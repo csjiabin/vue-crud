@@ -1,5 +1,9 @@
 <template>
-  <el-button v-if="crud.getPermission('add')" @click="crud.rowAdd()">
+  <el-button
+    v-if="crud.getPermission('add')"
+    v-bind="btnProps"
+    @click="crud.rowAdd()"
+  >
     <slot>{{ crud.dict.label.add }}</slot>
   </el-button>
 </template>
@@ -12,6 +16,7 @@ export default {
       const { style } = this.crud;
       return {
         type: "primary",
+        icon: "el-icon-plus",
         ...style.addBtn,
         ...this.$attrs,
       };
