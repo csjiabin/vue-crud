@@ -28,6 +28,8 @@ export default {
     },
     // 是否只显示表单
     inner: Boolean,
+    // 绑定组件名，设置方法
+    bindComponentName: String,
   },
   provide() {
     return {
@@ -207,15 +209,15 @@ export default {
         // 提交事件
         if (isFunction(submit)) {
           submit(form, res);
-        } else {
-          console.error("Not found callback function");
+          return;
         }
+        this.saving = false;
+        console.error("Not found callback function");
       });
     },
     // 重新绑定表单数据
     rebindForm(data) {
       let form = {};
-
       this.conf.items.forEach((v) => {
         form[v.prop] = v.hook
           ? valueHook.bind(data[v.prop], v.hook, data)
@@ -223,6 +225,58 @@ export default {
       });
 
       Object.assign(this.form, data, form);
+    },
+    // 渲染表单
+    renderForm() {
+      const { props, items, _data } = this.conf;
+      return (
+        <el-form
+          ref="form"
+          {...{
+            props: {
+              "label-position": this.isMini ? "top" : "",
+              disabled: this.saving,
+              model: this.form,
+              ...props,
+            },
+          }}
+        >
+          {/* 表单项列表 */}
+          <el-row gutter={10} v-loading={this.loading}>
+            {items.map((v, i) => {
+              let key = `form-item-${v.prop || i}`;
+              if (v.hidden) return;
+              // 是否分组显示
+              v._group =
+                isEmpty(this.tabActive) || isEmpty(v.group)
+                  ? true
+                  : v.group === this.tabActive;
+
+              v._label = { text: "" };
+              // 解析标题
+              if (isString(vlabel)) {
+                v_label = {
+                  text: v.label,
+                };
+              } else if (isObject(v.label)) {
+                v._label = v.label;
+              }
+              return (
+                <el-col
+                  key={key}
+                  {...{
+                    props: {
+                      key: i,
+                      span: 24,
+                      ...v,
+                    },
+                  }}
+                ></el-col>
+              );
+            })}
+          </el-row>
+        </el-form>
+      );
     },
     // 渲染操作按钮
     renderOp() {
@@ -243,9 +297,7 @@ export default {
                   ...style.saveBtn,
                 },
                 on: {
-                  click: () => {
-                    this.submit();
-                  },
+                  click: this.submit,
                 },
               }}
             >
@@ -262,9 +314,7 @@ export default {
                   ...style.closeBtn,
                 },
                 on: {
-                  click: () => {
-                    this.beforeClose();
-                  },
+                  click: this.beforeClose,
                 },
               }}
             >
@@ -282,9 +332,9 @@ export default {
   },
   render() {
     const form = (
-      <div class="cl-form">
-        <div class="cl-form__container"></div>
-        <div class="cl-form__footer">{this.renderOp()}</div>
+      <div class="v-form">
+        <div class="v-form__container">{this.renderForm()}</div>
+        <div class="v-form__footer">{this.renderOp()}</div>
       </div>
     );
     if (this.inner) {

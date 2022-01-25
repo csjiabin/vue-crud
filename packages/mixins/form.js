@@ -35,10 +35,10 @@ export default {
       let conf = null;
 
       switch (this.$options._componentTag) {
-        case "cl-adv-search":
+        case "v-adv-search":
           conf = this;
           break;
-        case "cl-form":
+        case "v-form":
           conf = this.conf;
           break;
         default:

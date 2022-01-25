@@ -11,7 +11,12 @@
       <v-pagination v-bind="pagerProps" />
     </div>
     <!--表格 -->
-    <el-table ref="table" v-bind="tableProps" v-on="listeners">
+    <el-table
+      ref="table"
+      v-bind="tableProps"
+      v-on="listeners"
+      v-loading="crud.loading"
+    >
       <v-vnodes :vnodes="renderColumns(columns)" />
       <slot slot="append" name="append" />
       <slot slot="empty" name="empty">

@@ -23,6 +23,7 @@ export default {
     font-size: 12px;
     margin-right: 10px;
     white-space: nowrap;
+    user-select: none;
   }
 }
 </style>
