@@ -149,29 +149,29 @@ export default {
 
     // 重置表单
     resetFields() {
-      if (this.$refs["form"]) {
-        this.$refs["form"].resetFields();
+      if (this.$refs.form) {
+        this.$refs.form.resetFields();
       }
     },
 
     // 清除表单验证
     clearValidate(props) {
-      if (this.$refs["form"]) {
-        return this.$refs["form"].clearValidate(props);
+      if (this.$refs.form) {
+        return this.$refs.form.clearValidate(props);
       }
     },
 
     // 验证表单字段
     validateField(props, callback) {
-      if (this.$refs["form"]) {
-        this.$refs["form"].validateField(props, callback);
+      if (this.$refs.form) {
+        this.$refs.form.validateField(props, callback);
       }
     },
 
     // 验证表单
     validate(callback) {
-      if (this.$refs["form"]) {
-        this.$refs["form"].validate(callback);
+      if (this.$refs.form) {
+        this.$refs.form.validate(callback);
       }
     }
   }

@@ -166,8 +166,8 @@ export function contains(parent, node) {
   }
 }
 
-export function getInstance(component) {
-  const ComponentConstructor = Vue.extend(component);
+export function getInstance(component, vue) {
+  const ComponentConstructor = vue.extend(component);
   return new ComponentConstructor({
     el: document.createElement("div"),
   });

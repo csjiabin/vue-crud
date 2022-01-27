@@ -340,6 +340,7 @@ export default {
         .filter((item) => !item.hidden)
         .map((item, index) => {
           let key = `${pKey}-${index}`;
+          let h = this.$createElement;
           let column = {
             props: {
               align: this._align,
@@ -361,7 +362,7 @@ export default {
                   return slot(newScope);
                 }
                 if (item.render) {
-                  return item.render(newScope, this.$createElement);
+                  return item.render(h, newScope);
                 }
                 if (item.formatter) {
                   return item.formatter(

@@ -95,6 +95,7 @@ export default {
           advSearch: "高级搜索",
           saveButtonText: "保存",
           closeButtonText: "关闭",
+          resetButtonText: "重置",
         },
       },
       table: {
@@ -113,6 +114,7 @@ export default {
         deleteBtn: {},
         saveBtn: {},
         closeBtn: {},
+        resetBtn: {},
         filterSearchBtn: {},
       },
     };

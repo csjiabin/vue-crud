@@ -11,14 +11,16 @@ import {
 } from "vue-crud/utils";
 import valueHook from "vue-crud/hook/value";
 import VDialog from "../dialog";
-import VVnodes from "../vnodes";
+import VFormTabs from "../form-tabs";
+
+import { renderNode } from "../vnodes";
 
 export default {
   name: "v-form",
   mixins: [Emitter, Screen, Form],
   components: {
     VDialog,
-    VVnodes,
+    VFormTabs,
   },
   props: {
     // 表单值
@@ -30,6 +32,7 @@ export default {
     inner: Boolean,
     // 绑定组件名，设置方法
     bindComponentName: String,
+    options: Object,
   },
   provide() {
     return {
@@ -58,6 +61,7 @@ export default {
           hidden: false,
           saveButtonText: "保存",
           closeButtonText: "取消",
+          resetButtonText: "重置",
           buttons: ["close", "save"],
         },
         dialog: {
@@ -70,7 +74,6 @@ export default {
           controls: ["fullscreen", "close"],
         },
         items: [],
-        _data: {},
       },
       tabActive: null,
     };
@@ -82,6 +85,11 @@ export default {
       handler(v) {
         this.form = { ...v };
       },
+    },
+    options: {
+      deep: true,
+      immediate: true,
+      handler: "create",
     },
   },
   methods: {
@@ -125,18 +133,21 @@ export default {
       });
       // 打开回调
       const { open } = this.conf.on;
-
+      let args = {
+        close: this.close,
+        submit: this.submit,
+        done: this.done,
+        reset: this.reset,
+        rebindForm: this.rebindForm,
+        ctx: this,
+      };
       if (open) {
         this.$nextTick(() => {
-          open(this.form, {
-            close: this.close,
-            submit: this.submit,
-            done: this.done,
-          });
+          open(this.form, args);
         });
       }
 
-      return this;
+      return args;
     },
     open(options) {
       this.visible = true;
@@ -166,6 +177,9 @@ export default {
     },
     clear() {
       this.clearValidate();
+    },
+    reset() {
+      this.resetFields();
     },
     submit(callback) {
       // 验证表单
@@ -205,7 +219,6 @@ export default {
 
         // 提交钩子
         const submit = callback || this.conf.on.submit;
-
         // 提交事件
         if (isFunction(submit)) {
           submit(form, res);
@@ -228,7 +241,7 @@ export default {
     },
     // 渲染表单
     renderForm() {
-      const { props, items, _data } = this.conf;
+      const { props, items } = this.conf;
       return (
         <el-form
           ref="form"
@@ -245,6 +258,14 @@ export default {
           <el-row gutter={10} v-loading={this.loading}>
             {items.map((v, i) => {
               let key = `form-item-${v.prop || i}`;
+              if (v.type == "tabs") {
+                return (
+                  <v-form-tabs
+                    v-model={this.tabActive}
+                    {...{ props: { ...v.props } }}
+                  />
+                );
+              }
               if (v.hidden) return;
               // 是否分组显示
               v._group =
@@ -254,8 +275,8 @@ export default {
 
               v._label = { text: "" };
               // 解析标题
-              if (isString(vlabel)) {
-                v_label = {
+              if (isString(v.label)) {
+                v._label = {
                   text: v.label,
                 };
               } else if (isObject(v.label)) {
@@ -271,7 +292,82 @@ export default {
                       ...v,
                     },
                   }}
-                ></el-col>
+                >
+                  {v.component && (
+                    <el-form-item
+                      v-show={v._group}
+                      {...{
+                        props: {
+                          label: v._label.text,
+                          prop: v.prop,
+                          rules: v.rules,
+                          ...v.props,
+                        },
+                      }}
+                    >
+                      {/* render label */}
+                      <template slot="label">
+                        <el-tooltip
+                          effect="dark"
+                          placement="top"
+                          content={v._label.tip}
+                          disabled={!v._label.tip}
+                        >
+                          <span>
+                            {v._label.text}
+                            {v._label.icon && <i class={v._label.icon}></i>}
+                          </span>
+                        </el-tooltip>
+                      </template>
+                      {/* Form item */}
+                      <div class="v-form-item">
+                        {/* Component */}
+                        {["prepend", "component", "append"].map((name) => {
+                          return (
+                            v[name] && (
+                              <div
+                                v-show={!v.collapse}
+                                class={[
+                                  `v-form-item__${name}`,
+                                  {
+                                    "is-flex": isEmpty(v.flex) ? true : v.flex,
+                                  },
+                                ]}
+                              >
+                                {renderNode(v.component, {
+                                  prop: v.prop,
+                                  scope: this.form,
+                                  vm: this,
+                                })}
+                              </div>
+                            )
+                          );
+                        })}
+                      </div>
+                      {/* Collapse button */}
+                      {isBoolean(v.collapse) && (
+                        <div
+                          class="cl-form-item__collapse"
+                          onClick={() => this.collapseItem(v)}
+                        >
+                          <el-divider content-position="center">
+                            {v.collapse ? (
+                              <span>
+                                查看更多
+                                <i class="el-icon-arrow-down" />
+                              </span>
+                            ) : (
+                              <span>
+                                隐藏内容
+                                <i class="el-icon-arrow-up" />
+                              </span>
+                            )}
+                          </el-divider>
+                        </div>
+                      )}
+                    </el-form-item>
+                  )}
+                </el-col>
               );
             })}
           </el-row>
@@ -280,8 +376,15 @@ export default {
     },
     // 渲染操作按钮
     renderOp() {
-      const { style } = this.$crud.options;
-      const { hidden, buttons, saveButtonText, closeButtonText } = this.conf.op;
+      const { style } = this.$crud?.options ?? {};
+      if (!style) return;
+      const {
+        hidden,
+        buttons,
+        saveButtonText,
+        resetButtonText,
+        closeButtonText,
+      } = this.conf.op;
       const { size = "small" } = this.conf.props;
       if (hidden) return;
       return buttons.map((vnode) => {
@@ -297,11 +400,29 @@ export default {
                   ...style.saveBtn,
                 },
                 on: {
-                  click: this.submit,
+                  click: () => this.submit(),
                 },
               }}
             >
               {saveButtonText}
+            </el-button>
+          );
+        }
+        if (vnode == "reset") {
+          return (
+            <el-button
+              {...{
+                props: {
+                  size,
+                  disabled: this.saving,
+                  ...style.resetBtn,
+                },
+                on: {
+                  click: this.reset,
+                },
+              }}
+            >
+              {resetButtonText}
             </el-button>
           );
         }
@@ -311,6 +432,7 @@ export default {
               {...{
                 props: {
                   size,
+                  disabled: this.saving,
                   ...style.closeBtn,
                 },
                 on: {
@@ -322,11 +444,10 @@ export default {
             </el-button>
           );
         }
-        if (vnode?.render) {
-          return vnode.render(this.form, this.$createElement);
-        }
-        let slot = this.$scopedSlots[vnode?.name];
-        return <v-vnodes vnodes={slot(this.form)} />;
+        return renderNode(vnode, {
+          scope: this.form,
+          vm: this,
+        });
       });
     },
   },
@@ -344,12 +465,94 @@ export default {
     let args = {
       title,
       width,
+      visible: this.visible,
       props: {
         ...dialog.props,
+        top: "5vh",
+        "before-close": this.beforeClose,
       },
-      on: {},
+      on: {
+        on: {
+          "update:visible": (v) => {
+            this.visible = v;
+          },
+          "update:props:fullscreen": (v) => {
+            dialog.props.fullscreen = v;
+          },
+          closed: this.onClosed,
+        },
+      },
     };
     return <v-dialog {...args}>{form}</v-dialog>;
   },
 };
 </script>
+<style lang="scss">
+.v-form {
+  padding: 5px;
+
+  .el-form-item {
+    .el-input-number {
+      &__decrease,
+      &__increase {
+        border: 0;
+        background-color: transparent;
+      }
+    }
+
+    &__label {
+      .el-tooltip {
+        i {
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+
+  &-item {
+    display: flex;
+
+    &__prepend {
+      margin-right: 10px;
+    }
+
+    &__component {
+      &.is-flex {
+        flex: 1;
+        width: 100%;
+
+        & > div {
+          width: 100%;
+        }
+      }
+    }
+
+    &__append {
+      margin-left: 10px;
+    }
+
+    &__collapse {
+      width: 100%;
+      font-size: 12px;
+      cursor: pointer;
+
+      .el-divider {
+        margin: 16px 0;
+
+        &__text {
+          font-size: 12px;
+        }
+      }
+
+      i {
+        margin-left: 6px;
+      }
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+</style>

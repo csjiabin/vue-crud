@@ -5,11 +5,9 @@
       <v-table v-bind="table">
         <template #header>
           <div>
-            <v-form inner v-model="form">
-              <template #test="scope">
-                <div>name{{ scope }}</div>
-              </template>
-            </v-form>
+            <div>{{ form }}</div>
+            <v-form ref="form" v-model="form" :options="formOptions" />
+            <el-button @click="openForm">打开表单</el-button>
             hello word
             <v-add-btn />
             <v-refresh-btn />
@@ -44,13 +42,76 @@ export default {
       form: {
         name: "",
       },
+      formOptions: {
+        items: [
+          {
+            label: "昵称",
+            prop: "name",
+            value: "name",
+            component: {
+              name: "el-input",
+              attrs: {
+                placeholder: "请填写昵称",
+              },
+            },
+            rules: {
+              required: true,
+              message: "昵称不能为空",
+            },
+          },
+          {
+            label: "性别",
+            prop: "sex",
+            value: "男",
+            component: {
+              name: "el-select",
+              attrs: {
+                placeholder: "请选择性别",
+                style: "width:100%",
+              },
+              options: ["男", "女", "未知"],
+            },
+            rules: {
+              required: true,
+              message: "性别不能为空",
+            },
+          },
+          {
+            label: "radio",
+            prop: "radio",
+            value: "A",
+            component: {
+              name: "el-radio-group",
+              options: ["A", "B", "C"],
+            },
+          },
+          {
+            label: "checkbox",
+            prop: "checkbox",
+            value: ["A"],
+            component: {
+              name: "el-checkbox-group",
+              options: ["A", "B", "C"],
+            },
+          },
+        ],
+        on: {
+          submit: (data, { close, done }) => {
+            this.$message.closeAll();
+            this.$message.success("保存成功");
+            console.log(data);
+            setTimeout(() => {
+              this.form = { ...data };
+              close();
+            }, 300);
+          },
+        },
+      },
       table: {
         ref: "table",
         props: {
           border: true,
-          rowKey: (row) => {
-            return row.id;
-          },
+          rowKey: "id",
         },
         pagination: {
           position: "bottom",
@@ -94,9 +155,7 @@ export default {
                     label: "column 2-1-2",
                     prop: "column2-1-2",
                     minWidth: 100,
-                    render: ({ row }) => {
-                      return JSON.stringify(row);
-                    },
+                    render: (h, { row }) => JSON.stringify(row),
                   },
                 ],
               },
@@ -163,7 +222,11 @@ export default {
       ],
     };
   },
+  mounted() {},
   methods: {
+    openForm() {
+      let form = this.$refs.form.open(this.formOptions);
+    },
     openContextMenu(event) {
       this.$crud.openContextMenu(event, {
         list: this.contextMenu,

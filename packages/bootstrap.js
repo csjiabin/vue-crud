@@ -12,7 +12,7 @@ export default (self) => {
   ctx.id = id;
 
   ctx.refresh = async (d) => {
-    isFunction(d) ? await d(self.params, refresh) : await refresh(d)
+    await (isFunction(d) ? d(self.params, refresh) : refresh(d))
     return ctx;
   }
 
