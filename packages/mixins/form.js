@@ -20,7 +20,7 @@ export default {
         "validateField",
         "validate"
       ];
-
+      console.log(this.bindComponentName);
       const parent = getParent.call(this, this.bindComponentName);
 
       apis.forEach((n) => {

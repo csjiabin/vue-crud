@@ -63,12 +63,16 @@
   </el-dialog>
 </template>
 <script>
+import { Dialog } from "element-ui";
+
 import { Screen } from "vue-crud/mixins";
 import { isBoolean, on, off, once } from "vue-crud/utils";
 export default {
   name: "v-dialog",
   mixins: [Screen],
-
+  components: {
+    ElDialog: Dialog,
+  },
   props: {
     visible: {
       type: Boolean,

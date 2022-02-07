@@ -2,6 +2,8 @@
   <div id="app">
     <v-crud ref="crud" border @load="onLoad">
       <v-dialog :visible.sync="visible" width="500px"> dialog </v-dialog>
+      <v-upsert :items="formOptions.items" />
+
       <v-table v-bind="table">
         <template #header>
           <div>
@@ -43,52 +45,53 @@ export default {
         name: "",
       },
       formOptions: {
+        title: "标题",
         items: [
-          {
-            label: "昵称",
-            prop: "name",
-            value: "name",
-            component: {
-              name: "el-input",
-              attrs: {
-                placeholder: "请填写昵称",
-              },
-            },
-            rules: {
-              required: true,
-              message: "昵称不能为空",
-            },
-          },
-          {
-            label: "性别",
-            prop: "sex",
-            value: "男",
-            component: {
-              name: "el-select",
-              attrs: {
-                placeholder: "请选择性别",
-                style: "width:100%",
-              },
-              options: ["男", "女", "未知"],
-            },
-            rules: {
-              required: true,
-              message: "性别不能为空",
-            },
-          },
-          {
-            label: "radio",
-            prop: "radio",
-            value: "A",
-            component: {
-              name: "el-radio-group",
-              options: ["A", "B", "C"],
-            },
-          },
+          // {
+          //   label: "昵称",
+          //   prop: "name",
+          //   value: "name",
+          //   component: {
+          //     name: "el-input",
+          //     attrs: {
+          //       placeholder: "请填写昵称",
+          //     },
+          //   },
+          //   rules: {
+          //     required: true,
+          //     message: "昵称不能为空",
+          //   },
+          // },
+          // {
+          //   label: "性别",
+          //   prop: "sex",
+          //   value: "男",
+          //   component: {
+          //     name: "el-select",
+          //     attrs: {
+          //       placeholder: "请选择性别",
+          //       style: "width:100%",
+          //     },
+          //     options: ["男", "女", "未知"],
+          //   },
+          //   rules: {
+          //     required: true,
+          //     message: "性别不能为空",
+          //   },
+          // },
+          // {
+          //   label: "radio",
+          //   prop: "radio",
+          //   value: "A",
+          //   component: {
+          //     name: "el-radio-group",
+          //     options: ["A", "B", "C"],
+          //   },
+          // },
           {
             label: "checkbox",
             prop: "checkbox",
-            value: ["A"],
+            value: [],
             component: {
               name: "el-checkbox-group",
               options: ["A", "B", "C"],
@@ -97,10 +100,10 @@ export default {
         ],
         on: {
           submit: (data, { close, done }) => {
-            this.$message.closeAll();
-            this.$message.success("保存成功");
             console.log(data);
             setTimeout(() => {
+              this.$message.closeAll();
+              this.$message.success("保存成功");
               this.form = { ...data };
               close();
             }, 300);
@@ -225,7 +228,9 @@ export default {
   mounted() {},
   methods: {
     openForm() {
-      let form = this.$refs.form.open(this.formOptions);
+      // let form = this.$refs.form.open(this.formOptions);
+      let form = this.$crud.openForm(this.formOptions);
+      console.log("openForm", form);
     },
     openContextMenu(event) {
       this.$crud.openContextMenu(event, {
@@ -234,13 +239,14 @@ export default {
     },
     onLoad(ctx) {
       let service = {
+        delete: async () => Date.now(),
         page: (query) => {
           return new Promise((reslove) => {
             console.log(query);
             setTimeout(() => {
               reslove({
                 list: [{ id: Date.now(), ...query }],
-                pagination: { total: 100, ...query },
+                pagination: { total: 150, ...query },
               });
             }, 300);
           });

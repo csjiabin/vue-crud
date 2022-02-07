@@ -271,21 +271,20 @@ export default {
     },
     // 新增
     rowAdd() {
-      console.log(this);
-      this.broadcast("cl-upsert", "crud.add");
+      this.broadcast("v-upsert", "crud.add");
     },
 
     // 编辑
     rowEdit(data) {
-      this.broadcast("cl-upsert", "crud.edit", data);
+      this.broadcast("v-upsert", "crud.edit", data);
     },
     // 追加
     rowAppend(data) {
-      this.broadcast("cl-upsert", "crud.append", data);
+      this.broadcast("v-upsert", "crud.append", data);
     },
     // 关闭
     rowClose() {
-      this.broadcast("cl-upsert", "crud.close");
+      this.broadcast("v-upsert", "crud.close");
     },
     rowDelete(...selection) {
       // 获取请求方法

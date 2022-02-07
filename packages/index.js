@@ -1,6 +1,6 @@
 import components from "./components";
-import { getInstance } from "vue-crud/utils";
-import { contextMenu } from "vue-crud/directives";
+// import { getInstance } from "vue-crud/utils";
+// import { contextMenu } from "vue-crud/directives";
 
 const install = function (Vue, options = {}) {
   const inst = new Vue()

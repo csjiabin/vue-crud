@@ -67,13 +67,14 @@ export default {
         dialog: {
           props: {
             fullscreen: false,
-            "close-on-click-modal": false,
-            "append-to-body": true,
+            closeOnClickModal: false,
+            appendToBody: true,
           },
           hiddenControls: false,
           controls: ["fullscreen", "close"],
         },
         items: [],
+        _data: {},
       },
       tabActive: null,
     };
@@ -323,24 +324,23 @@ export default {
                       <div class="v-form-item">
                         {/* Component */}
                         {["prepend", "component", "append"].map((name) => {
+                          if (!v[name]) return;
                           return (
-                            v[name] && (
-                              <div
-                                v-show={!v.collapse}
-                                class={[
-                                  `v-form-item__${name}`,
-                                  {
-                                    "is-flex": isEmpty(v.flex) ? true : v.flex,
-                                  },
-                                ]}
-                              >
-                                {renderNode(v.component, {
-                                  prop: v.prop,
-                                  scope: this.form,
-                                  vm: this,
-                                })}
-                              </div>
-                            )
+                            <div
+                              v-show={!v.collapse}
+                              class={[
+                                `v-form-item__${name}`,
+                                {
+                                  "is-flex": isEmpty(v.flex) ? true : v.flex,
+                                },
+                              ]}
+                            >
+                              {renderNode(v[name], {
+                                prop: v.prop,
+                                scope: this.form,
+                                vm: this,
+                              })}
+                            </div>
                           );
                         })}
                       </div>
@@ -462,17 +462,17 @@ export default {
       return form;
     }
     const { title, width, dialog } = this.conf;
-    let args = {
-      title,
-      width,
-      visible: this.visible,
-      props: {
-        ...dialog.props,
-        top: "5vh",
-        "before-close": this.beforeClose,
-      },
-      on: {
-        on: {
+    return (
+      <v-dialog
+        title={title}
+        width={width}
+        visible={this.visible}
+        props={{
+          ...dialog.props,
+          top: "5vh",
+          "before-close": this.beforeClose,
+        }}
+        on={{
           "update:visible": (v) => {
             this.visible = v;
           },
@@ -480,10 +480,11 @@ export default {
             dialog.props.fullscreen = v;
           },
           closed: this.onClosed,
-        },
-      },
-    };
-    return <v-dialog {...args}>{form}</v-dialog>;
+        }}
+      >
+        {form}
+      </v-dialog>
+    );
   },
 };
 </script>
