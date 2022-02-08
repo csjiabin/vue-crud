@@ -252,6 +252,7 @@ export default {
       const {
         refresh,
         rowEdit,
+        rowAppend,
         rowDelete,
         getPermission,
         table = {},
@@ -276,6 +277,17 @@ export default {
               label: "刷新",
               callback: (_, done) => {
                 refresh();
+                done();
+              },
+            };
+          }
+
+          if (v == "append") {
+            return {
+              label: "追加",
+              hidden: !getPermission("add"),
+              callback: (_, done) => {
+                rowAppend(row);
                 done();
               },
             };

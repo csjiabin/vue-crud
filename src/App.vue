@@ -47,56 +47,56 @@ export default {
       formOptions: {
         title: "标题",
         items: [
-          // {
-          //   label: "昵称",
-          //   prop: "name",
-          //   value: "name",
-          //   component: {
-          //     name: "el-input",
-          //     attrs: {
-          //       placeholder: "请填写昵称",
-          //     },
-          //   },
-          //   rules: {
-          //     required: true,
-          //     message: "昵称不能为空",
-          //   },
-          // },
-          // {
-          //   label: "性别",
-          //   prop: "sex",
-          //   value: "男",
-          //   component: {
-          //     name: "el-select",
-          //     attrs: {
-          //       placeholder: "请选择性别",
-          //       style: "width:100%",
-          //     },
-          //     options: ["男", "女", "未知"],
-          //   },
-          //   rules: {
-          //     required: true,
-          //     message: "性别不能为空",
-          //   },
-          // },
-          // {
-          //   label: "radio",
-          //   prop: "radio",
-          //   value: "A",
-          //   component: {
-          //     name: "el-radio-group",
-          //     options: ["A", "B", "C"],
-          //   },
-          // },
           {
-            label: "checkbox",
-            prop: "checkbox",
-            value: [],
+            label: "昵称",
+            prop: "name",
+            value: "name",
             component: {
-              name: "el-checkbox-group",
+              name: "el-input",
+              attrs: {
+                placeholder: "请填写昵称",
+              },
+            },
+            rules: {
+              required: true,
+              message: "昵称不能为空",
+            },
+          },
+          {
+            label: "性别",
+            prop: "sex",
+            value: "男",
+            component: {
+              name: "el-select",
+              attrs: {
+                placeholder: "请选择性别",
+                style: "width:100%",
+              },
+              options: ["男", "女", "未知"],
+            },
+            rules: {
+              required: true,
+              message: "性别不能为空",
+            },
+          },
+          {
+            label: "radio",
+            prop: "radio",
+            value: "A",
+            component: {
+              name: "el-radio-group",
               options: ["A", "B", "C"],
             },
           },
+          // {
+          //   label: "checkbox",
+          //   prop: "checkbox",
+          //   value: ["A", "B"],
+          //   component: {
+          //     name: "el-checkbox-group",
+          //     options: ["A", "B", "C"],
+          //   },
+          // },
         ],
         on: {
           submit: (data, { close, done }) => {
@@ -121,7 +121,14 @@ export default {
         },
         on: {},
         align: "left",
-        contextMenu: ["refresh", "update", "delete", "order-asc", "order-desc"],
+        contextMenu: [
+          "refresh",
+          "update",
+          "append",
+          "delete",
+          "order-asc",
+          "order-desc",
+        ],
         data: [{ id: 1, a: [{ b: { c: 3 } }] }, { id: 2 }],
         columns: [
           { type: "selection" },
@@ -149,20 +156,24 @@ export default {
                 minWidth: 100,
                 children: [
                   {
-                    label: "column 2-1-1",
-                    prop: "column2-1-1",
+                    label: "Name",
+                    prop: "name",
                     minWidth: 100,
                     emptyText: "-",
                   },
                   {
-                    label: "column 2-1-2",
-                    prop: "column2-1-2",
+                    label: "Sex",
+                    prop: "sex",
                     minWidth: 100,
-                    render: (h, { row }) => JSON.stringify(row),
                   },
                 ],
               },
-              { label: "column 2-2", prop: "column2-2", minWidth: 100 },
+              {
+                label: "column 2-2",
+                prop: "column2-2",
+                minWidth: 100,
+                render: (h, { row }) => JSON.stringify(row),
+              },
             ],
           },
         ],
@@ -228,9 +239,8 @@ export default {
   mounted() {},
   methods: {
     openForm() {
-      // let form = this.$refs.form.open(this.formOptions);
-      let form = this.$crud.openForm(this.formOptions);
-      console.log("openForm", form);
+      //this.$refs.form.open(this.formOptions);
+      this.$crud.openForm(this.formOptions);
     },
     openContextMenu(event) {
       this.$crud.openContextMenu(event, {
@@ -239,13 +249,24 @@ export default {
     },
     onLoad(ctx) {
       let service = {
-        delete: async () => Date.now(),
+        delete: async () => {
+          console.log("delete");
+        },
+        update: async () => {
+          console.log("update");
+        },
+        info: async () => ({
+          name: "name",
+          sex: "男",
+          radio: "A",
+          checkbox: ["A", "B"],
+        }),
         page: (query) => {
           return new Promise((reslove) => {
             console.log(query);
             setTimeout(() => {
               reslove({
-                list: [{ id: Date.now(), ...query }],
+                list: [{ id: Date.now(), name: "name", sex: "男", ...query }],
                 pagination: { total: 150, ...query },
               });
             }, 300);

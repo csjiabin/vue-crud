@@ -18,7 +18,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:demo": "vite build --mode demo"
+    "build:demo": "vite build -m demo"
   },
   "dependencies": {
     "array.prototype.flat": "^1.2.5",

@@ -31,8 +31,11 @@ export const renderNode = (vnode, { prop, scope, vm }) => {
   // 输入事件
   const onInput = args.on.input
   // 设置默认值
-  args.attrs.value = scope[prop];
-  // args.value = scope[prop];
+  if (prop) {
+    args.attrs.value = scope[prop];
+    args.props.value = scope[prop];
+  }
+  console.log(args);
   // 监听输入事件
   args.on.input = (val) => {
     vm.$set(scope, prop, val);
@@ -54,38 +57,40 @@ export const renderNode = (vnode, { prop, scope, vm }) => {
       }
       let key = value || i
       if (vnode.name === "el-select") {
-
-        return h('el-option', {
+        return renderNode({
+          name: 'el-option',
           key,
           props: {
             label,
             value,
             ...v.props
           }
-        })
-
+        }, { vm })
       }
       if (vnode.name === "el-radio-group") {
-        return h('el-radio', {
+        return renderNode({
+          name: 'el-radio',
           key,
           props: {
             label: value,
             ...v.props
-          }
-        }, label)
+          },
+          children: [label]
+        }, { vm })
       }
       if (vnode.name === "el-checkbox-group") {
-        return h('el-checkbox', {
+        return renderNode({
+          name: 'el-checkbox',
           key,
           props: {
             label: value,
             ...v.props
-          }
-        }, label)
+          },
+          children: [label]
+        }, { vm })
       }
     });
-    console.log({ args, vnode, value: scope[prop], scope, prop });
-    return h(vnode.name, args, h('el-checkbox', { props: { labe: '111' } }, '111'))
+    return h(vnode.name, args, children)
   }
   let slot = vm.$scopedSlots[vnode.name];
   // 如果插槽存在

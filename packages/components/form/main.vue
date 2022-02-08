@@ -147,7 +147,7 @@ export default {
           open(this.form, args);
         });
       }
-
+      // console.log(this.form);
       return args;
     },
     open(options) {
@@ -237,8 +237,8 @@ export default {
           ? valueHook.bind(data[v.prop], v.hook, data)
           : data[v.prop];
       });
-
       Object.assign(this.form, data, form);
+      // console.log(this.form);
     },
     // 渲染表单
     renderForm() {

@@ -1,6 +1,6 @@
 <template>
   <div class="v-upsert">
-    <v-form ref="form" bind-component-name="VUpsert" v-model="form" />
+    <v-form ref="form" bind-component-name="v-upsert" v-model="form" />
   </div>
 </template>
 <script>
@@ -178,10 +178,16 @@ export default {
       const { saveButtonText, closeButtonText } = this.crud.dict.label;
 
       return new Promise((resolve) => {
+        // console.log(this.items);
         this.$refs.form.open({
           title: this.editing ? "编辑" : "新增",
-          props: {
-            ...this.props,
+          props: this.props,
+          dialog: this.dialog,
+          items: this.items,
+          op: {
+            saveButtonText,
+            closeButtonText,
+            ...this.op,
           },
           on: {
             open: (_, { done, close }) => {
@@ -207,13 +213,7 @@ export default {
             },
             submit: this.submit,
           },
-          op: {
-            saveButtonText,
-            closeButtonText,
-            ...this.op,
-          },
-          dialog: this.dialog,
-          items: this.items,
+
           _data: {
             editing: this.editing,
           },

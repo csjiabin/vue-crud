@@ -87,13 +87,12 @@ export function getParent(name) {
   let parent = this.$parent;
 
   while (parent) {
-    if (parent.$options.componentName !== name) {
+    if (parent.$options.name !== name) {
       parent = parent.$parent;
     } else {
       return parent;
     }
   }
-
   return null;
 }
 

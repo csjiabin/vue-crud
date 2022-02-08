@@ -20,6 +20,7 @@ let buildOptions = {
   minify: "esbuild",
   // 进行压缩计算
   brotliSize: true,
+  // sourcemap: true,
   lib: {
     entry: path.resolve(__dirname, 'packages/index.js'),
     name: 'VueCrud',
@@ -54,6 +55,7 @@ export default defineConfig(({ mode, command }) => {
         manualChunks: {
           vue: ['vue'],
           elementUI: ['element-ui'],
+          libs: ["array.prototype.flat", "clone-deep"]
         }
       }
     }

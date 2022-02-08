@@ -76,6 +76,5 @@ export default {
 <style lang="scss">
 .v-filter-group {
   display: inline-flex;
-  margin: 0 10px;
 }
 </style>
