@@ -79,7 +79,7 @@ export default defineConfig(({ mode, command }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-        'vue-crud': path.resolve(__dirname, './packages')
+        'vue-el-crud': path.resolve(__dirname, './packages')
       }
     },
     css: {

@@ -3,7 +3,7 @@ import {
   isEmpty,
   isString,
   isObject,
-} from "vue-crud/utils";
+} from "vue-el-crud/utils";
 // Handle general component
 const elKeys = ["el-select", "el-radio-group", "el-checkbox-group"];
 /**

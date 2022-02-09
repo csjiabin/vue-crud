@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import { Emitter } from "vue-crud/mixins";
+import { Emitter } from "vue-el-crud/mixins";
 import VForm from "../form";
 export default {
   name: "v-upsert",

@@ -1,7 +1,7 @@
 
 import Form from "./main.vue";
 
-import { getInstance } from "vue-crud/utils";
+import { getInstance } from "vue-el-crud/utils";
 
 Form.install = function (Vue) {
   const instance = getInstance(Form, Vue);

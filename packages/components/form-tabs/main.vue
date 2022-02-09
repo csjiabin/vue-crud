@@ -18,7 +18,7 @@
   </div>
 </template>
 <script>
-import { isArray, isEmpty } from "vue-crud/utils";
+import { isArray, isEmpty } from "vue-el-crud/utils";
 
 export default {
   name: "v-form-tabs",

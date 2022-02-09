@@ -18,7 +18,7 @@
   </div>
 </template>
 <script>
-import { cloneDeep } from "vue-crud/utils";
+import { cloneDeep } from "vue-el-crud/utils";
 export default {
   name: "v-filter-group",
   inject: ["crud"],

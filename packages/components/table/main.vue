@@ -36,9 +36,9 @@
   </div>
 </template>
 <script lang="jsx">
-import { resize } from "vue-crud/directives";
-import { Emitter, Screen } from "vue-crud/mixins";
-import { isString, isArray, isFunction, isEmpty, get } from "vue-crud/utils";
+import { resize } from "vue-el-crud/directives";
+import { Emitter, Screen } from "vue-el-crud/mixins";
+import { isString, isArray, isFunction, isEmpty, get } from "vue-el-crud/utils";
 
 import VVnode from "../vnode";
 import VPagination from "../pagination";

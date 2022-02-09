@@ -1,4 +1,4 @@
-import { isArray, isFunction, isObject, isString } from "vue-crud/utils";
+import { isArray, isFunction, isObject, isString } from "vue-el-crud/utils";
 
 export const format = {
 	number(value) {

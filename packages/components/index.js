@@ -1,4 +1,4 @@
-import { toHump } from "vue-crud/utils";
+import { toHump } from "vue-el-crud/utils";
 import AddBtn from "./add-btn";
 import ContextMenu from "./context-menu";
 import Crud from "./crud";

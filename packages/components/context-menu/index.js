@@ -1,6 +1,6 @@
 import ContextMenu from "./main.vue";
-import { getInstance } from "vue-crud/utils";
-import { contextMenu } from "vue-crud/directives";
+import { getInstance } from "vue-el-crud/utils";
+import { contextMenu } from "vue-el-crud/directives";
 
 
 ContextMenu.install = function (Vue) {

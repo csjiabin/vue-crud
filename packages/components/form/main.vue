@@ -1,5 +1,5 @@
 <script lang="jsx">
-import { Emitter, Screen, Form } from "vue-crud/mixins";
+import { Emitter, Screen, Form } from "vue-el-crud/mixins";
 import {
   deepMerge,
   isFunction,
@@ -8,8 +8,8 @@ import {
   isObject,
   isBoolean,
   cloneDeep,
-} from "vue-crud/utils";
-import valueHook from "vue-crud/hook/value";
+} from "vue-el-crud/utils";
+import valueHook from "vue-el-crud/hook/value";
 import VDialog from "../dialog";
 import VFormTabs from "../form-tabs";
 

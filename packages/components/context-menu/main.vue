@@ -14,8 +14,8 @@
   </div>
 </template>
 <script>
-import { contains, on, off } from "vue-crud/utils";
-import { resize } from "vue-crud/directives";
+import { contains, on, off } from "vue-el-crud/utils";
+import { resize } from "vue-el-crud/directives";
 import MenuList from "./menu-list.vue";
 export default {
   name: "v-context-menu",

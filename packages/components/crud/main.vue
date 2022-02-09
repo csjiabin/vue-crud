@@ -8,15 +8,15 @@
   </div>
 </template>
 <script>
-import { Emitter } from "vue-crud/mixins";
+import { Emitter } from "vue-el-crud/mixins";
 import {
   deepMerge,
   isArray,
   isString,
   isObject,
   isFunction,
-} from "vue-crud/utils";
-import bootstrap from "vue-crud/bootstrap";
+} from "vue-el-crud/utils";
+import bootstrap from "vue-el-crud/bootstrap";
 export default {
   name: "v-crud",
   mixins: [Emitter],

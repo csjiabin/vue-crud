@@ -66,8 +66,8 @@
 import { Dialog } from "element-ui";
 import VVnode, { renderNode } from "../vnode";
 
-import { Screen } from "vue-crud/mixins";
-import { isBoolean, on, off, once } from "vue-crud/utils";
+import { Screen } from "vue-el-crud/mixins";
+import { isBoolean, on, off, once } from "vue-el-crud/utils";
 export default {
   name: "v-dialog",
   mixins: [Screen],

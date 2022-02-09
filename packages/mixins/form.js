@@ -1,4 +1,4 @@
-import { dataset, getParent } from "vue-crud/utils";
+import { dataset, getParent } from "vue-el-crud/utils";
 
 export default {
   mounted() {
