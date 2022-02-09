@@ -1,5 +1,5 @@
 import Vue from "vue";
-import VueCrud from 'vue-crud'
+import VueCrud from 'vue-el-crud'
 Vue.use(VueCrud, {
   dict: {
     sort: {
