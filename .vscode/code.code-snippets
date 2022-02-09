@@ -1,27 +1,18 @@
 {
+  "v-add-btn": {
+    "prefix": "v-add-btn",
+    "body": ["<v-add-btn>${1}</v-add-btn>"],
+    "description": "v-add-btn"
+  },
+  "v-context-menu": {
+    "prefix": "v-context-menu",
+    "body": ["<v-context-menu>${1}</v-context-menu>"],
+    "description": "v-context-menu"
+  },
   "v-flex1": {
     "prefix": "v-flex1",
     "body": ["<v-flex1>${1}</v-flex1>"],
     "description": "v-flex1"
-  },
-  "v-dialog": {
-    "prefix": "v-dialog",
-    "body": [
-      "    <v-dialog",
-      "        title=\"title\"",
-      "        width=\"500px\"",
-      "        :visible.sync=\"visible\"",
-      "        @vose=\"vose\"",
-      "        :props=\"{",
-      "            beforeClose: beforeClose,",
-      "            appendToBody: true,",
-      "            voseOnvickModal: false",
-      "         }\"",
-      "        >",
-      "        dialog",
-      "    </v-dialog>"
-    ],
-    "description": "v-dialog dialog"
   },
   "v-crud": {
     "prefix": "v-crud",
@@ -92,5 +83,29 @@
       ""
     ],
     "description": "v-crud snippets"
+  },
+  "v-dialog": {
+    "prefix": "v-dialog",
+    "body": [
+      "    <v-dialog",
+      "        title=\"title\"",
+      "        width=\"500px\"",
+      "        :visible.sync=\"visible\"",
+      "        @vose=\"vose\"",
+      "        :props=\"{",
+      "            beforeClose: beforeClose,",
+      "            appendToBody: true,",
+      "            voseOnvickModal: false",
+      "         }\"",
+      "        >",
+      "        dialog",
+      "    </v-dialog>"
+    ],
+    "description": "v-dialog dialog"
+  },
+  "v-filter": {
+    "prefix": "v-filter",
+    "body": ["<v-filter label=\"${1}\">${2}</v-filter>"],
+    "description": "v-filter"
   }
 }

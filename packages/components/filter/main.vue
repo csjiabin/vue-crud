@@ -16,9 +16,11 @@ export default {
 </script>
 <style lang="scss">
 .v-filter {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  margin: 0 10px;
+  & + & {
+    margin-left: 10px;
+  }
   &__label {
     font-size: 12px;
     margin-right: 10px;

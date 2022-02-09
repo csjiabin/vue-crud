@@ -21,7 +21,7 @@
           <!-- 后缀图标 -->
           <i v-if="v['suffix-icon']" :class="v['suffix-icon']" />
         </template>
-        <vnodes v-else :vnodes="v.render($createElement, v)" />
+        <v-vnode v-else :vnode="v.render($createElement, v)" />
       </div>
       <!-- 子节点 -->
       <template v-if="v.children && v._showChildren">
@@ -37,11 +37,11 @@
   </div>
 </template>
 <script>
-import Vnodes from "../vnodes";
+import VVnode from "../vnode";
 export default {
   name: "v-context-menu-list",
   components: {
-    Vnodes,
+    VVnode,
   },
   props: {
     list: {

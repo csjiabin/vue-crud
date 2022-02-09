@@ -13,7 +13,7 @@ import valueHook from "vue-crud/hook/value";
 import VDialog from "../dialog";
 import VFormTabs from "../form-tabs";
 
-import { renderNode } from "../vnodes";
+import { renderNode } from "../vnode";
 
 export default {
   name: "v-form",

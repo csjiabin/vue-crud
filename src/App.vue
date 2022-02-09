@@ -1,7 +1,18 @@
 <template>
   <div id="app">
     <v-crud ref="crud" border @load="onLoad">
-      <v-dialog :visible.sync="visible" width="500px"> dialog </v-dialog>
+      <v-dialog
+        :visible.sync="visible"
+        width="500px"
+        :controls="['expand', 'fullscreen', 'close']"
+      >
+        <div>dialog</div>
+
+        <template #expand>
+          <div>expand</div>
+          <v-flex1 />
+        </template>
+      </v-dialog>
       <v-upsert :items="formOptions.items" />
 
       <v-table v-bind="table">
@@ -16,7 +27,7 @@
             <el-button @click="visible = true" v-contextmenu="contextMenu"
               >dialog</el-button
             >
-            <v-filter-group v-model="search">
+            <v-filter-group v-model="search" style="margin-left: 10px">
               <v-filter label="关键字">
                 <el-input v-model="search.keyword" />
               </v-filter>
@@ -291,7 +302,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   box-sizing: border-box;
-  text-align: center;
   height: 100%;
   padding: 10px;
 }

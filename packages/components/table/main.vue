@@ -17,10 +17,10 @@
       v-on="listeners"
       v-loading="crud.loading"
     >
-      <v-vnodes :vnodes="renderColumns(columns)" />
+      <v-vnode :vnode="renderColumns(columns)" />
       <slot slot="append" name="append" />
       <slot slot="empty" name="empty">
-        <v-vnodes v-if="!emptyText" :vnodes="renderEmpty()" />
+        <v-vnode v-if="!emptyText" :vnode="renderEmpty()" />
       </slot>
     </el-table>
     <!--分页 -->
@@ -40,7 +40,7 @@ import { resize } from "vue-crud/directives";
 import { Emitter, Screen } from "vue-crud/mixins";
 import { isString, isArray, isFunction, isEmpty, get } from "vue-crud/utils";
 
-import VVnodes from "../vnodes";
+import VVnode from "../vnode";
 import VPagination from "../pagination";
 
 export default {
@@ -51,7 +51,7 @@ export default {
   },
   inject: ["crud"],
   components: {
-    VVnodes,
+    VVnode,
     VPagination,
   },
   props: {

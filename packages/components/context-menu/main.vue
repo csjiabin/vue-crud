@@ -48,16 +48,19 @@ export default {
         this.close();
       }
     },
-    open(event, options) {
-      let { pageX, pageY } = event || {};
+    /**
+     *
+     * @param {event} evt
+     * @param {{list:[]}} options
+     */
+    open(evt, options) {
+      let { pageX, pageY } = evt || {};
       let { list } = options || {};
       let position = {
         left: pageX,
         top: pageY,
       };
-      if (list) {
-        this.list = list;
-      }
+      this.list = list ?? [];
       this.visible = true;
       this.index = "";
       this.$nextTick(() => {
@@ -73,7 +76,8 @@ export default {
         }
         this.style = position;
       });
-      this.stopDefault(event);
+      evt.preventDefault();
+      evt.stopPropagation();
       this.hiddenChildren();
       return {
         close: this.close,
@@ -107,10 +111,6 @@ export default {
         });
       };
       deep(this.list);
-    },
-    stopDefault(e) {
-      e.preventDefault();
-      e.stopPropagation();
     },
   },
 };

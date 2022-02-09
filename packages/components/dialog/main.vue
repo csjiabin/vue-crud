@@ -46,7 +46,7 @@
               <i class="el-icon-close" />
             </button>
             <template v-else>
-              <slot :name="item" />
+              <v-vnode :key="item" :vnode="renderControl(item)" />
             </template>
           </template>
         </div>
@@ -64,6 +64,7 @@
 </template>
 <script>
 import { Dialog } from "element-ui";
+import VVnode, { renderNode } from "../vnode";
 
 import { Screen } from "vue-crud/mixins";
 import { isBoolean, on, off, once } from "vue-crud/utils";
@@ -72,6 +73,7 @@ export default {
   mixins: [Screen],
   components: {
     ElDialog: Dialog,
+    VVnode,
   },
   props: {
     visible: {
@@ -321,6 +323,9 @@ export default {
       //   // document.onmousemove = null;
       //   off(document, "mousemove", this.onMousemove);
       // };
+    },
+    renderControl(name) {
+      return renderNode(name, { vm: this });
     },
   },
 };

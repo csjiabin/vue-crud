@@ -16,12 +16,10 @@ export const renderNode = (vnode, { prop, scope, vm }) => {
   const h = vm.$createElement;
   // 判断是否为空
   if (isEmpty(vnode)) return;
+  // 如果插槽存在
+  let slot = vm.$scopedSlots[vnode?.name || vnode];
   // 判断是否为字符串
-  if (isString(vnode)) {
-    let slot = vm.$scopedSlots[vnode];
-    if (!slot) return;
-    return slot(scope);
-  }
+  if (slot) return slot(scope)
   // 判断是否为函数
   if (isFunction(vnode)) return vnode(h, scope)
 
@@ -35,7 +33,7 @@ export const renderNode = (vnode, { prop, scope, vm }) => {
     args.attrs.value = scope[prop];
     args.props.value = scope[prop];
   }
-  console.log(args);
+  // console.log(args);
   // 监听输入事件
   args.on.input = (val) => {
     vm.$set(scope, prop, val);
@@ -92,9 +90,6 @@ export const renderNode = (vnode, { prop, scope, vm }) => {
     });
     return h(vnode.name, args, children)
   }
-  let slot = vm.$scopedSlots[vnode.name];
-  // 如果插槽存在
-  if (slot) return slot(scope);
   // 如果有render函数
   if (vnode.render) return vnode.render(h, scope);
   // 默认$createElement方法

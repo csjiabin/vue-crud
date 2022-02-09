@@ -25,7 +25,7 @@ export default {
       apis.forEach((n) => {
         parent[n] = this[n];
       });
-      console.log({ parent });
+      // console.log({ parent });
     }
   },
 
