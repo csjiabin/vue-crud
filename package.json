@@ -1,6 +1,6 @@
 {
   "name": "vue-el-crud",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "csjiabin <hjbmeow@163.com>",
   "files": [
     "dist",
@@ -36,5 +36,10 @@
     "vite-plugin-vue2": "^1.8.1",
     "vue-template-compiler": "^2.6.14"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/csjiabin/vue-crud",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csjiabin/vue-crud.git"
+  }
 }
