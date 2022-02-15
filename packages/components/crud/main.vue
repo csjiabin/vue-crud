@@ -137,7 +137,7 @@ export default {
     // 刷新请求
     refresh(query = {}) {
       // 设置参数
-      let params = this.paramsReplace({ ...this.params, ...query });
+      let params = this.paramsReplace(Object.assign(this.params, query));
       // Loading
       this.loading = true;
 
