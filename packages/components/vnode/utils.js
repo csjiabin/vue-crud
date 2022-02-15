@@ -17,9 +17,17 @@ export const renderNode = (vnode, { prop, scope, vm }) => {
   // 判断是否为空
   if (isEmpty(vnode)) return;
   // 如果插槽存在
-  let slot = vm.$scopedSlots[vnode?.name || vnode];
-  // 判断是否为字符串
-  if (slot) return slot(scope)
+  let slotName = vnode?.name || vnode
+  if (slotName.indexOf("slot-") == 0) {
+    let slot = vm.$scopedSlots[slotName];
+    if (slot) {
+      return slot(scope)
+    } else {
+      console.error(`组件渲染失败，未找到插槽：${slotName}`, vm);
+    }
+    return
+  }
+
   // 判断是否为函数
   if (isFunction(vnode)) return vnode(h, scope)
 

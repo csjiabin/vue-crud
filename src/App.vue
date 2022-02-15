@@ -4,11 +4,11 @@
       <v-dialog
         :visible.sync="visible"
         width="500px"
-        :controls="['expand', 'fullscreen', 'close']"
+        :controls="['slot-expand', 'fullscreen', 'close']"
       >
         <div>dialog</div>
 
-        <template #expand>
+        <template #slot-expand>
           <div>expand</div>
           <v-flex1 />
         </template>
